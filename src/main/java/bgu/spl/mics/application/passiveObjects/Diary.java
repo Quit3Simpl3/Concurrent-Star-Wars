@@ -1,6 +1,5 @@
 package bgu.spl.mics.application.passiveObjects;
 
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Passive data-object representing a Diary - in which the flow of the battle is recorded.
