@@ -1,6 +1,7 @@
 package bgu.spl.mics;
 
 import bgu.spl.mics.application.messages.AttackEvent;
+import bgu.spl.mics.application.messages.BroadcastImpl;
 import bgu.spl.mics.application.services.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,11 +10,17 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class MessageBusTest {
+    MessageBus mb;
+    Event<Boolean> attackEvent;
+    R2D2Microservice R2D2;
+    Broadcast broadcast;
 
     @BeforeEach
     void setUp() {
-      Event <Boolean> first = new AttackEvent();
-      R2D2Microservice R2D2 = new R2D2Microservice(1);
+        attackEvent = new AttackEvent();
+        R2D2 = new R2D2Microservice(1);
+        mb = new MessageBusImpl();
+        broadcast = new BroadcastImpl();
     }
 
     @AfterEach
@@ -62,11 +69,20 @@ class MessageBusTest {
 
     @Test
     void awaitMessage() {
-        //TODO :: verify m's is register
+        // R2D2 is not registered. Should throw IllegalStateException:
+        assertThrows(IllegalStateException.class, ()->mb.awaitMessage(R2D2));
         //TODO :: make sure the method is waiting for the next massage
         //TODO :: the method is get back available when a massage i push to the Q
-        //TODO :: get the massage and bring it to my Q and get out of the m's Q in the MB
-        //TODO :: throw Exception if m's isn'T registered
 
+        mb.register(R2D2);
+        mb.subscribeEvent(AttackEvent.class, R2D2);
+        // TODO: try awaitMessage and make sure it waits (how?)
+        mb.sendBroadcast(broadcast);
+        // TODO: try awaitMessage - expect to get nothing (waits)
+        assertThrows(InterruptedException.class, ()->mb.awaitMessage(R2D2)); // This maybe?
+        mb.sendEvent(attackEvent);
+        assertDoesNotThrow(()->{Message m = mb.awaitMessage(R2D2);});
+        // TODO: try awaitMessage - expect to get the event
+        // TODO: make sure the event no longer appears in R2D2's Q and in the main Q
     }
 }

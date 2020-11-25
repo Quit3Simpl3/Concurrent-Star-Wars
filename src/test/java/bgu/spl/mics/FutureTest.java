@@ -47,9 +47,6 @@ public class FutureTest {
         future.resolve(result2);
         assertTrue(result2.equals(future.get()));
 
-
-
-
         //same for get(time,timeunit)
         //first  - this check that its wait for resolve to be done
         assertFalse(future.get(1,TimeUnit.SECONDS) == null);
@@ -70,7 +67,6 @@ public class FutureTest {
 
     @Test
     void testIsDone() {
-
         assertFalse(future.isDone());
 
         future.resolve("someResulte");
@@ -81,8 +77,5 @@ public class FutureTest {
 
         future.get(1, TimeUnit.SECONDS);
         assertTrue(future.isDone());
-
-
     }
-
 }
