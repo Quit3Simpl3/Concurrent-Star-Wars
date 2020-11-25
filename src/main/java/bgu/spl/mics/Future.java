@@ -4,11 +4,11 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * A Future object represents a promised result - an object that will
- * eventually be resolved to hold a result of some operation. The class allows
- * Retrieving the result once it is available.
- * 
- * Only private methods may be added to this class.
- * No public constructor is allowed except for the empty constructor.
+ *  * eventually be resolved to hold a result of some operation. The class allows
+ *  * Retrieving the result once it is available.
+ *  *
+ *  * Only private methods may be added to this class.
+ *  * No public constructor is allowed except for the empty constructor.
  */
 public class Future<T> {
 	private boolean isDone;
@@ -18,8 +18,10 @@ public class Future<T> {
 	 * This should be the the only public constructor in this class.
 	 */
 	public Future() {
-		
+		isDone = false;
+		result = null;
 	}
+
 	
 	/**
      * retrieves the result the Future object holds if it has been resolved.
@@ -30,22 +32,30 @@ public class Future<T> {
      * 	       
      */
 	public T get() {
-		
-        return null; 
+		//TODO throw exe if there is no result
+		if (isDone()) {
+			//TODO return the result
+		}else {
+			//TODO wait for the job to be done
+		}
+		return null;
 	}
 	
 	/**
      * Resolves the result of this Future object.
      */
 	public void resolve (T result) {
-		
+		if(result == null)
+			throw new IllegalArgumentException("null is forbidden");
+		this.result = result;
+		isDone = true;
 	}
 	
 	/**
      * @return true if this object has been resolved, false otherwise
      */
 	public boolean isDone() {
-		return null;
+		return isDone;
 	}
 	
 	/**
