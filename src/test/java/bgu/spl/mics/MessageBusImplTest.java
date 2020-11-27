@@ -25,14 +25,14 @@ class MessageBusImplTest {
     void setUp() {
         testMsg1 = null;
         testMsg2 = null;
-        exampleEvent1 = new ExampleEvent("test");
-        exampleEvent2 = new ExampleEvent("test");
-        exampleEvent3 = new ExampleEvent("test");
+        exampleEvent1 = new ExampleEvent("test_event1");
+        exampleEvent2 = new ExampleEvent("test_event2");
+        exampleEvent3 = new ExampleEvent("test_event3");
         mb = new MessageBusImpl();
         c3po = new C3POMicroservice();
         han = new HanSoloMicroservice();
         lando = new LandoMicroservice(10);
-        broadTest = new ExampleBroadcast("test");
+        broadTest = new ExampleBroadcast("test_broadcast");
     }
 
     @AfterEach
