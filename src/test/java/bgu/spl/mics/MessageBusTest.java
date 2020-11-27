@@ -61,13 +61,6 @@ class MessageBusTest {
     }
 
     @Test
-    void unregister() {
-        //TODO :: make sure all the massage in m's Q  go back to main Q
-        //TODO :: make sure the Q is deleted
-        //TODO :: make sure all the other Q are still there
-    }
-
-    @Test
     void awaitMessage() {
         // R2D2 is not registered. Should throw IllegalStateException:
         assertThrows(IllegalStateException.class, ()->mb.awaitMessage(R2D2));
