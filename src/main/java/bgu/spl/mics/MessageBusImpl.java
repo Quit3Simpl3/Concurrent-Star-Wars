@@ -17,6 +17,7 @@ public class MessageBusImpl implements MessageBus {
 	// add another dictionary for broadcast messages? or: when awaitMessage(), check if the type of the next message is broadcast -
 	// 		if it is a broadcast message, don't pop it from the msg queue, but add it to a popping-list that will pop all the
 	//		broadcast messages when the round-robin round ends.
+	private static MessageBusImpl instance = null; // Implemented as Singleton
 
 	private HashMap<Class<? extends Event>, Queue> EventHash;
 
