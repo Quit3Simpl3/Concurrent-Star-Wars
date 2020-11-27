@@ -7,9 +7,13 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class EwokTest {
+    Ewok specific_ewok;
 
     @BeforeEach
     void setUp() {
+        specific_ewok = new Ewok(42);
+        // Make sure specific_ewok.serialNumber is 42:
+        assertEquals(specific_ewok.getSerialNumber(), 42);
     }
 
     @AfterEach
@@ -18,9 +22,15 @@ class EwokTest {
 
     @Test
     void acquire() {
+        assertTrue(specific_ewok.isAvailable());
+        specific_ewok.acquire();
+        assertFalse(specific_ewok.isAvailable());
     }
 
     @Test
     void release() {
+        assertFalse(specific_ewok.isAvailable());
+        specific_ewok.release();
+        assertTrue(specific_ewok.isAvailable());
     }
 }
