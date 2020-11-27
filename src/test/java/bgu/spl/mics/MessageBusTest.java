@@ -2,6 +2,7 @@ package bgu.spl.mics;
 
 import bgu.spl.mics.application.messages.AttackEvent;
 import bgu.spl.mics.application.services.*;
+import bgu.spl.mics.example.messages.ExampleBroadcast;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -44,10 +45,12 @@ class MessageBusTest {
 
     @Test
     void sendBroadcast() {
+        MessageBusImpl a = new MessageBusImpl();
+        Broadcast B = new ExampleBroadcast("mytest");
         Event <Boolean> first = new AttackEvent();
         LinkedList<Queue> BroadcastList = null;
-        Queue<Event> firstQ = null;
-        Queue<Event> secondQ = null;
+     //   Queue<Event> firstQ = null;
+     //   Queue<Event> secondQ = null;
         BroadcastList.add(firstQ);
         BroadcastList.add(secondQ);
         sendBroadcast();

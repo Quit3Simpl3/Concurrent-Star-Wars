@@ -8,10 +8,14 @@ import java.util.Queue;
  * Write your implementation here!
  * Only private fields and methods can be added to this class.
  */
+
 public class MessageBusImpl implements MessageBus {
 
 	private HashMap<Class<? extends Event>, Queue> EventHash;
-	
+
+	public MessageBusImpl () {
+
+	}
 	
 	@Override
 	public <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m) {
