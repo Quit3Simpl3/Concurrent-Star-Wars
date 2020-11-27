@@ -41,12 +41,12 @@ class MessageBusTest {
 
     @Test
     void testSubscribeEvent() {
-        // 1. register han
+        // 1. register han and c3po
         // 2. send message
         // 3. make sure no message is received
-        // 4. subscribe han
+        // 4. subscribe han and c3po
         // 5. send message
-        // 6. make sure message is received
+        // 6. make sure message is received ONLY BY HAN
     }
 
     @Test
