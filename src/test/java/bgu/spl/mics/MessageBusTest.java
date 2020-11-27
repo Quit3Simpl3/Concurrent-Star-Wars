@@ -1,6 +1,5 @@
 package bgu.spl.mics;
 
-import bgu.spl.mics.application.messages.AttackEvent;
 import bgu.spl.mics.application.services.*;
 import bgu.spl.mics.example.messages.ExampleBroadcast;
 import bgu.spl.mics.example.messages.ExampleEvent;
@@ -41,7 +40,7 @@ class MessageBusTest {
     }
 
     @Test
-    void testSubscribeEvent() {  //TODO :: we subscribe Attackevent but send exempleEvent
+    void testSubscribeEvent() {
         mb.register(han);
         mb.register(c3po);
 
@@ -56,7 +55,7 @@ class MessageBusTest {
             assertNull(testMsg1);
             assertNull(testMsg2);
         }
-        mb.subscribeEvent(AttackEvent.class, han);
+        mb.subscribeEvent(ExampleEvent.class, han);
 
         mb.sendEvent(exampleEvent1);
 
@@ -72,7 +71,6 @@ class MessageBusTest {
         assertNull(testMsg2);
 
         assertEquals(((ExampleBroadcast)testMsg1).getSenderId(),((ExampleBroadcast)broadTest).getSenderId());
-
     }
 
     @Test
@@ -118,7 +116,6 @@ class MessageBusTest {
                 ((ExampleBroadcast)broadTest1).getSenderId(),
                 ((ExampleBroadcast)testMsg2).getSenderId()
         );
-
     }
 
     @Test
@@ -181,8 +178,8 @@ class MessageBusTest {
         mb.register(han);
         mb.register(c3po);
         // Subscribe Han and C3PO to AttackEvent type in the message bus:
-        mb.subscribeEvent(AttackEvent.class, han);
-        mb.subscribeEvent(AttackEvent.class, c3po);
+        mb.subscribeEvent(ExampleEvent.class, han);
+        mb.subscribeEvent(ExampleEvent.class, c3po);
         // Test awaitMessage without a message waiting:
         try {
             testMsg1 = mb.awaitMessage(han);
