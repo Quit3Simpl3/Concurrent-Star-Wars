@@ -1,10 +1,14 @@
 package bgu.spl.mics;
 
+import java.util.HashMap;
+import java.util.Queue;
+
 /**
  * The {@link MessageBusImpl class is the implementation of the MessageBus interface.
  * Write your implementation here!
  * Only private fields and methods can be added to this class.
  */
+
 public class MessageBusImpl implements MessageBus {
 	// TODO: fields
 	// main-queue: stores the messages sent to the MB for processing.
@@ -13,6 +17,12 @@ public class MessageBusImpl implements MessageBus {
 	// add another dictionary for broadcast messages? or: when awaitMessage(), check if the type of the next message is broadcast -
 	// 		if it is a broadcast message, don't pop it from the msg queue, but add it to a popping-list that will pop all the
 	//		broadcast messages when the round-robin round ends.
+
+	private HashMap<Class<? extends Event>, Queue> EventHash;
+
+	public MessageBusImpl () {
+
+	}
 	
 	@Override
 	public <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m) {

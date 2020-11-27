@@ -3,9 +3,14 @@ package bgu.spl.mics;
 import bgu.spl.mics.application.messages.AttackEvent;
 import bgu.spl.mics.application.messages.BroadcastImpl;
 import bgu.spl.mics.application.services.*;
+import bgu.spl.mics.example.messages.ExampleBroadcast;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Queue;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -21,6 +26,11 @@ class MessageBusTest {
         R2D2 = new R2D2Microservice(1);
         mb = new MessageBusImpl();
         broadcast = new BroadcastImpl();
+      MessageBusImpl mytest;
+      Event <Boolean> first = new AttackEvent();
+      R2D2Microservice R2D2 = new R2D2Microservice(1);
+      HashMap <Event, Queue> EventHash;
+      LinkedList<Queue> BroadcastList;
     }
 
     @AfterEach
@@ -44,12 +54,27 @@ class MessageBusTest {
 
     @Test
     void sendBroadcast() {
+        MessageBusImpl a = new MessageBusImpl();
+        Broadcast B = new ExampleBroadcast("mytest");
+        Event <Boolean> first = new AttackEvent();
+        LinkedList<Queue> BroadcastList = null;
+     //   Queue<Event> firstQ = null;
+     //   Queue<Event> secondQ = null;
+        BroadcastList.add(firstQ);
+        BroadcastList.add(secondQ);
+        sendBroadcast();
+
         //TODO :: verify the massage has enter the right Q AND THE Q didnt lose the data he had before
         //TODO :: after sending make sure event is deleted from the primary Q (and that he didnt change the other data)
     }
 
     @Test
     void sendEvent() {
+        int a =5;
+        Event <Boolean> first = new AttackEvent();
+        R2D2Microservice R2D2 = new R2D2Microservice(1);
+
+
         //TODO :: make sure the that round-robin works, and that the massage go to the map table, check the Q
         //TODO :: make sure return null when no micro-service has subscribed
         //TODO :: after sending make sure event is deleted from the primary Q (and that he didnt change the other data)
@@ -57,6 +82,7 @@ class MessageBusTest {
 
     @Test
     void register() {
+
         //TODO :: verify create ms-Q and its empty, and verify that Q go to the right KEY in Hash
     }
 
