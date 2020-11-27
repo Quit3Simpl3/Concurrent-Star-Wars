@@ -44,7 +44,7 @@ class MessageBusTest {
         // 1. register han and c3po
         // 2. send message
         // 3. make sure no message is received
-        // 4. subscribe han and c3po
+        // 4. subscribe han
         // 5. send message
         // 6. make sure message is received ONLY BY HAN
     }
