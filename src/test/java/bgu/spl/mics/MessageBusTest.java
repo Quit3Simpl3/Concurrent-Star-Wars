@@ -28,7 +28,7 @@ class MessageBusTest {
         exampleEvent1 = new ExampleEvent("test_event1");
         exampleEvent2 = new ExampleEvent("test_event2");
         exampleEvent3 = new ExampleEvent("test_event3");
-        mb = new MessageBusImpl();
+        mb = MessageBusImpl.getInstance();
         c3po = new C3POMicroservice();
         han = new HanSoloMicroservice();
         lando = new LandoMicroservice(10);
@@ -41,14 +41,30 @@ class MessageBusTest {
 
     @Test
     void testSubscribeEvent() {
+        // 1. register han
+        // 2. send message
+        // 3. make sure no message is received
+        // 4. subscribe han
+        // 5. send message
+        // 6. make sure message is received
     }
 
     @Test
     void testSubscribeBroadcast() {
+        // 1. register han
+        // 2. send message
+        // 3. make sure no message is received
+        // 4. subscribe han
+        // 5. send message
+        // 6. make sure message is received
     }
 
     @Test
     void testComplete() {
+        // 1. register han
+        // 2. han subscribe event
+        // 3. han does mb.complete(event, some_result)
+        // 4. make sure future.get() gives some_result
     }
 
     @Test
@@ -57,8 +73,8 @@ class MessageBusTest {
         mb.register(han);
         mb.register(c3po);
         // Subscribe Han and C3PO to broadTest in the message bus:
-        mb.subscribeBroadcast(broadTest.getClass(),han);
-        mb.subscribeBroadcast(broadTest.getClass(),c3po);
+        mb.subscribeBroadcast(broadTest.getClass(), han);
+        mb.subscribeBroadcast(broadTest.getClass(), c3po);
         // Test awaitMessage without a message waiting:
         try {
             testMsg1 = mb.awaitMessage(han);

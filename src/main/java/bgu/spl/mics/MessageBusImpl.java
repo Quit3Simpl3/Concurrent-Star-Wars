@@ -21,10 +21,18 @@ public class MessageBusImpl implements MessageBus {
 
 	private HashMap<Class<? extends Event>, Queue> EventHash;
 
-	public MessageBusImpl () {
-
+	private MessageBusImpl() { // private constructor for singleton
+		// TODO: initialize fields
 	}
-	
+
+	// static method to create instance
+	public static MessageBusImpl getInstance() {
+		if (instance == null)
+			instance = new MessageBusImpl();
+
+		return instance;
+	}
+
 	@Override
 	public <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m) {
 		// TODO: add m to (Event type, MicroService)[type] queue
