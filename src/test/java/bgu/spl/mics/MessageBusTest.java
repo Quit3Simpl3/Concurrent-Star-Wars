@@ -18,7 +18,7 @@ class MessageBusTest {
     MicroService c3po;
     MicroService han;
     MicroService lando;
-    Broadcast broadTest;
+    Broadcast broadTest,broadTest1;
     Event exampleEvent1, exampleEvent2, exampleEvent3;
 
     @BeforeEach
@@ -33,6 +33,7 @@ class MessageBusTest {
         han = new HanSoloMicroservice();
         lando = new LandoMicroservice(10);
         broadTest = new ExampleBroadcast("test_broadcast");
+        broadTest1 = new ExampleBroadcast("test_broadcast1");
     }
 
     @AfterEach
@@ -40,26 +41,84 @@ class MessageBusTest {
     }
 
     @Test
-    void testSubscribeEvent() {
-        // 1. register han and c3po
-        // 2. send message
-        // 3. make sure no message is received
-        // 4. subscribe han
-        // 5. send message
-        // 6. make sure message is received ONLY BY HAN
+    void testSubscribeEvent() {  //TODO :: we subscribe Attackevent but send exempleEvent
+        mb.register(han);
+        mb.register(c3po);
+
+        mb.sendEvent(exampleEvent1);
+
+        // Test awaitMessage without a message waiting:
+        try {
+            testMsg1 = mb.awaitMessage(han);
+            testMsg2 = mb.awaitMessage(c3po);
+        }
+        catch (InterruptedException e) {
+            assertNull(testMsg1);
+            assertNull(testMsg2);
+        }
+        mb.subscribeEvent(AttackEvent.class, han);
+
+        mb.sendEvent(exampleEvent1);
+
+
+        try {
+            testMsg1 = mb.awaitMessage(han);
+        }
+        catch (InterruptedException e) {
+          fail();
+        }
+
+        assertNotNull(testMsg1);
+        assertNull(testMsg2);
+
+        assertEquals(((ExampleBroadcast)testMsg1).getSenderId(),((ExampleBroadcast)broadTest).getSenderId());
+
     }
 
     @Test
     void testSubscribeBroadcast() {
-        // 1. register han and c3po
-        // 2. send message
-        // 3. make sure no message is received by both
-        // 4. subscribe han only
-        // 5. send message
-        // 6. make sure han received message and c3po didn't
-        // 7. subscribe c3po
-        // 8. send message
-        // 9. make sure han AND c3po received the message
+        mb.register(han);
+        mb.register(c3po);
+
+        mb.sendBroadcast(broadTest);
+
+        try {
+            testMsg1 = mb.awaitMessage(han);
+            testMsg2 = mb.awaitMessage(c3po);
+        }
+        catch (InterruptedException e) {
+            assertNull(testMsg1);
+            assertNull(testMsg2);
+        }
+
+        mb.subscribeBroadcast(broadTest.getClass(), han);
+        mb.sendBroadcast(broadTest);
+
+        try {
+            testMsg1 = mb.awaitMessage(han);
+            testMsg2 = mb.awaitMessage(c3po);
+        }
+        catch (InterruptedException e) {
+            assertNotNull(testMsg1);
+            assertNull(testMsg2);
+        }
+        mb.subscribeBroadcast(broadTest.getClass(), c3po);
+        mb.sendBroadcast(broadTest1);
+
+        try {
+            testMsg1 = mb.awaitMessage(han);
+            testMsg2 = mb.awaitMessage(c3po);
+        }
+        catch (InterruptedException e) {
+            assertNotNull(testMsg1);
+            assertNotNull(testMsg2);
+        }
+        assertEquals(
+                ((ExampleBroadcast)testMsg1).getSenderId(),
+                ((ExampleBroadcast)broadTest1).getSenderId(),
+                ((ExampleBroadcast)testMsg2).getSenderId()
+        );
+
     }
 
     @Test
