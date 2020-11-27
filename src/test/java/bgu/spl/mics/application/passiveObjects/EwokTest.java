@@ -21,14 +21,14 @@ class EwokTest {
     }
 
     @Test
-    void acquire() {
+    void testAcquire() {
         assertTrue(specific_ewok.isAvailable());
         specific_ewok.acquire();
         assertFalse(specific_ewok.isAvailable());
     }
 
     @Test
-    void release() {
+    void testRelease() {
         assertFalse(specific_ewok.isAvailable());
         specific_ewok.release();
         assertTrue(specific_ewok.isAvailable());
