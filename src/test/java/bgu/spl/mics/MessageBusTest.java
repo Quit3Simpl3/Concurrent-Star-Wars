@@ -1,36 +1,39 @@
 package bgu.spl.mics;
 
 import bgu.spl.mics.application.messages.AttackEvent;
-import bgu.spl.mics.application.messages.BroadcastImpl;
 import bgu.spl.mics.application.services.*;
 import bgu.spl.mics.example.messages.ExampleBroadcast;
+import bgu.spl.mics.example.messages.ExampleEvent;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Queue;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class MessageBusTest {
+    // fields:
+    Message testMsg1;
+    Message testMsg2;
     MessageBus mb;
-    Event<Boolean> attackEvent;
-    R2D2Microservice R2D2;
-    Broadcast broadcast;
+    MicroService c3po;
+    MicroService han;
+    MicroService lando;
+    Broadcast broadTest,broadTest1;
+    Event exampleEvent1, exampleEvent2, exampleEvent3;
 
     @BeforeEach
     void setUp() {
-        attackEvent = new AttackEvent();
-        R2D2 = new R2D2Microservice(1);
-        mb = new MessageBusImpl();
-        broadcast = new BroadcastImpl();
-      MessageBusImpl mytest;
-      Event <Boolean> first = new AttackEvent();
-      R2D2Microservice R2D2 = new R2D2Microservice(1);
-      HashMap <Event, Queue> EventHash;
-      LinkedList<Queue> BroadcastList;
+        testMsg1 = null;
+        testMsg2 = null;
+        exampleEvent1 = new ExampleEvent("test_event1");
+        exampleEvent2 = new ExampleEvent("test_event2");
+        exampleEvent3 = new ExampleEvent("test_event3");
+        mb = MessageBusImpl.getInstance();
+        c3po = new C3POMicroservice();
+        han = new HanSoloMicroservice();
+        lando = new LandoMicroservice(10);
+        broadTest = new ExampleBroadcast("test_broadcast");
+        broadTest1 = new ExampleBroadcast("test_broadcast1");
     }
 
     @AfterEach
@@ -38,70 +41,199 @@ class MessageBusTest {
     }
 
     @Test
-    void subscribeEvent() {
-        //TODO :: make sure the add the hash table the right Ms + Event type
+    void testSubscribeEvent() {  //TODO :: we subscribe Attackevent but send exempleEvent
+        mb.register(han);
+        mb.register(c3po);
+
+        mb.sendEvent(exampleEvent1);
+
+        // Test awaitMessage without a message waiting:
+        try {
+            testMsg1 = mb.awaitMessage(han);
+            testMsg2 = mb.awaitMessage(c3po);
+        }
+        catch (InterruptedException e) {
+            assertNull(testMsg1);
+            assertNull(testMsg2);
+        }
+        mb.subscribeEvent(AttackEvent.class, han);
+
+        mb.sendEvent(exampleEvent1);
+
+
+        try {
+            testMsg1 = mb.awaitMessage(han);
+        }
+        catch (InterruptedException e) {
+          fail();
+        }
+
+        assertNotNull(testMsg1);
+        assertNull(testMsg2);
+
+        assertEquals(((ExampleBroadcast)testMsg1).getSenderId(),((ExampleBroadcast)broadTest).getSenderId());
+
     }
 
     @Test
-    void subscribeBroadcast() {
-        //TODO :: make sure the add the hash table the right Ms + Event type
+    void testSubscribeBroadcast() {
+        mb.register(han);
+        mb.register(c3po);
+
+        mb.sendBroadcast(broadTest);
+
+        try {
+            testMsg1 = mb.awaitMessage(han);
+            testMsg2 = mb.awaitMessage(c3po);
+        }
+        catch (InterruptedException e) {
+            assertNull(testMsg1);
+            assertNull(testMsg2);
+        }
+
+        mb.subscribeBroadcast(broadTest.getClass(), han);
+        mb.sendBroadcast(broadTest);
+
+        try {
+            testMsg1 = mb.awaitMessage(han);
+            testMsg2 = mb.awaitMessage(c3po);
+        }
+        catch (InterruptedException e) {
+            assertNotNull(testMsg1);
+            assertNull(testMsg2);
+        }
+        mb.subscribeBroadcast(broadTest.getClass(), c3po);
+        mb.sendBroadcast(broadTest1);
+
+        try {
+            testMsg1 = mb.awaitMessage(han);
+            testMsg2 = mb.awaitMessage(c3po);
+        }
+        catch (InterruptedException e) {
+            assertNotNull(testMsg1);
+            assertNotNull(testMsg2);
+        }
+        assertEquals(
+                ((ExampleBroadcast)testMsg1).getSenderId(),
+                ((ExampleBroadcast)broadTest1).getSenderId(),
+                ((ExampleBroadcast)testMsg2).getSenderId()
+        );
+
     }
 
     @Test
-    void complete() {
-        //TODO :: verify get the right result and bring back the event is finsh
+    void testComplete() {
+        // 1. register han
+        // 2. han subscribe event
+        // 3. han does mb.complete(event, some_result)
+        // 4. make sure future.get() gives some_result
     }
 
     @Test
-    void sendBroadcast() {
-        MessageBusImpl a = new MessageBusImpl();
-        Broadcast B = new ExampleBroadcast("mytest");
-        Event <Boolean> first = new AttackEvent();
-        LinkedList<Queue> BroadcastList = null;
-     //   Queue<Event> firstQ = null;
-     //   Queue<Event> secondQ = null;
-        BroadcastList.add(firstQ);
-        BroadcastList.add(secondQ);
-        sendBroadcast();
-
-        //TODO :: verify the massage has enter the right Q AND THE Q didnt lose the data he had before
-        //TODO :: after sending make sure event is deleted from the primary Q (and that he didnt change the other data)
+    void testSendBroadcast() {
+        // Register Han and C3PO to the message bus:
+        mb.register(han);
+        mb.register(c3po);
+        // Subscribe Han and C3PO to broadTest in the message bus:
+        mb.subscribeBroadcast(broadTest.getClass(), han);
+        mb.subscribeBroadcast(broadTest.getClass(), c3po);
+        // Test awaitMessage without a message waiting:
+        try {
+            testMsg1 = mb.awaitMessage(han);
+            testMsg2 = mb.awaitMessage(c3po);
+        }
+        catch (InterruptedException e) {
+            assertNull(testMsg1);
+            assertNull(testMsg2);
+        }
+        // Test awaitMessage with a message waiting:
+        mb.sendBroadcast(broadTest);
+        try {
+            testMsg1 = mb.awaitMessage(han); // Receive the broadcast for han
+            testMsg2 = mb.awaitMessage(c3po); // Receive the broadcast for c3po
+        }
+        catch (InterruptedException e) {
+            fail(); // Han should receive a message now, otherwise something is wrong.
+        }
+        // Assert that both han AND c3po received the broadcast message:
+        assertEquals(
+                ((ExampleBroadcast)testMsg1).getSenderId(),
+                ((ExampleBroadcast)broadTest).getSenderId()
+        );
+        assertEquals(
+                ((ExampleBroadcast)testMsg2).getSenderId(),
+                ((ExampleBroadcast)broadTest).getSenderId()
+        );
     }
 
     @Test
-    void sendEvent() {
-        int a =5;
-        Event <Boolean> first = new AttackEvent();
-        R2D2Microservice R2D2 = new R2D2Microservice(1);
-
-
-        //TODO :: make sure the that round-robin works, and that the massage go to the map table, check the Q
-        //TODO :: make sure return null when no micro-service has subscribed
-        //TODO :: after sending make sure event is deleted from the primary Q (and that he didnt change the other data)
+    void testSendEvent() {
+        // Register Han and C3PO to the message bus:
+        mb.register(han);
+        mb.register(c3po);
+        // Subscribe Han and C3PO to AttackEvent type in the message bus:
+        mb.subscribeEvent(AttackEvent.class, han);
+        mb.subscribeEvent(AttackEvent.class, c3po);
+        // Test awaitMessage without a message waiting:
+        try {
+            testMsg1 = mb.awaitMessage(han);
+        }
+        catch (InterruptedException e) {
+            assertNull(testMsg1);
+        }
+        // Test awaitMessage with ONE message waiting:
+        mb.sendEvent(exampleEvent1);
+        try {
+            testMsg1 = mb.awaitMessage(han);
+            testMsg2 = mb.awaitMessage(c3po);
+        }
+        catch (InterruptedException e) {
+            // Make sure ONLY ONE received a message:
+            String msg_han = ((ExampleEvent)testMsg1).getSenderName();
+            String msg_c3po = ((ExampleEvent)testMsg2).getSenderName();
+            String example_event1 = ((ExampleEvent)exampleEvent1).getSenderName();
+            // Condition:
+            boolean cond = (
+                (testMsg2 == null && ((ExampleEvent)testMsg1).getSenderName().equals(example_event1))
+                ||
+                (testMsg1 == null && ((ExampleEvent)testMsg2).getSenderName().equals(example_event1))
+            );
+            assertTrue(cond);
+        }
+        // Test awaitMessage with TWO messages waiting:
+        mb.sendEvent(exampleEvent2);
+        mb.sendEvent(exampleEvent3);
+        try {
+            testMsg1 = mb.awaitMessage(han);
+            testMsg2 = mb.awaitMessage(c3po);
+        }
+        catch (InterruptedException e) {
+            fail(); // If the awaitMessage didn't return a message twice it therefore failed to work properly.
+        }
+        // Make sure han AND c3po received each a single, different message:
+        boolean cond = (
+            (
+                ((ExampleEvent)testMsg1).getSenderName().equals(((ExampleEvent)exampleEvent2).getSenderName())
+                &&
+                ((ExampleEvent)testMsg2).getSenderName().equals(((ExampleEvent)exampleEvent3).getSenderName())
+            )
+            ||
+            (
+                ((ExampleEvent)testMsg1).getSenderName().equals(((ExampleEvent)exampleEvent3).getSenderName())
+                &&
+                ((ExampleEvent)testMsg2).getSenderName().equals(((ExampleEvent)exampleEvent2).getSenderName())
+            )
+        );
+        assertTrue(cond);
     }
 
     @Test
-    void register() {
-
-        //TODO :: verify create ms-Q and its empty, and verify that Q go to the right KEY in Hash
+    void testRegister() { // TODO: Check whether we need to test this.
     }
 
-    @Test
-    void awaitMessage() {
-        // R2D2 is not registered. Should throw IllegalStateException:
-        assertThrows(IllegalStateException.class, ()->mb.awaitMessage(R2D2));
-        //TODO :: make sure the method is waiting for the next massage
-        //TODO :: the method is get back available when a massage i push to the Q
 
-        mb.register(R2D2);
-        mb.subscribeEvent(AttackEvent.class, R2D2);
-        // TODO: try awaitMessage and make sure it waits (how?)
-        mb.sendBroadcast(broadcast);
-        // TODO: try awaitMessage - expect to get nothing (waits)
-        assertThrows(InterruptedException.class, ()->mb.awaitMessage(R2D2)); // This maybe?
-        mb.sendEvent(attackEvent);
-        assertDoesNotThrow(()->{Message m = mb.awaitMessage(R2D2);});
-        // TODO: try awaitMessage - expect to get the event
-        // TODO: make sure the event no longer appears in R2D2's Q and in the main Q
+    @Test
+    void testAwaitMessage() {
+        
     }
 }
