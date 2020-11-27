@@ -127,6 +127,15 @@ class MessageBusTest {
         // 2. han subscribe event
         // 3. han does mb.complete(event, some_result)
         // 4. make sure future.get() gives some_result
+
+        mb.register(han); // Register han to MessageBus
+        mb.subscribeEvent(ExampleEvent.class, han); // Subscribe han to ExampleEvent type
+        Future<String> future = mb.sendEvent(exampleEvent1); // han should receive this event
+        assertDoesNotThrow(()->{ testMsg1 = mb.awaitMessage(han); });  // awaitMessage should work properly
+        String han_result = "My name is Han and I am done.";
+        mb.complete(exampleEvent1, han_result); // mb resolves future with han_result
+        String result_from_mb = future.get(); // should contain han_result
+        assertEquals(result_from_mb, han_result);
     }
 
     @Test
@@ -227,13 +236,38 @@ class MessageBusTest {
         assertTrue(cond);
     }
 
-    @Test
-    void testRegister() { // TODO: Check whether we need to test this.
-    }
-
 
     @Test
     void testAwaitMessage() {
-        
+        // c3po is not registered. Should throw IllegalStateException:
+        assertThrows(IllegalStateException.class, ()->mb.awaitMessage(c3po));
+        // register c3po:
+        mb.register(c3po);
+        // c3po is registered. should receive the broadcast msg:
+        mb.subscribeBroadcast(ExampleBroadcast.class, c3po);
+        mb.sendBroadcast(broadTest);
+        try {
+            testMsg1 = mb.awaitMessage(c3po);
+        }
+        catch (InterruptedException e) {
+            fail(); // shouldn't throw an exception
+        }
+        assertEquals(
+                ((ExampleBroadcast)testMsg1).getSenderId(),
+                ((ExampleBroadcast)broadTest).getSenderId()
+        );
+        // c3po is registered. should receive the event msg:
+        mb.subscribeEvent(ExampleEvent.class, c3po);
+        mb.sendEvent(exampleEvent1);
+        try {
+            testMsg2 = mb.awaitMessage(c3po);
+        }
+        catch (InterruptedException e) {
+            fail(); // shouldn't throw an exception
+        }
+        assertEquals(
+                ((ExampleEvent)testMsg2).getSenderName(),
+                ((ExampleEvent)exampleEvent1).getSenderName()
+        );
     }
 }
