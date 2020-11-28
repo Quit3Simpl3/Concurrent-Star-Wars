@@ -83,8 +83,7 @@ class MessageBusTest {
         try {
             testMsg1 = mb.awaitMessage(han);
             testMsg2 = mb.awaitMessage(c3po);
-        }
-        catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             assertNull(testMsg1);
             assertNull(testMsg2);
         }
@@ -95,8 +94,7 @@ class MessageBusTest {
         try {
             testMsg1 = mb.awaitMessage(han);
             testMsg2 = mb.awaitMessage(c3po);
-        }
-        catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             assertNotNull(testMsg1);
             assertNull(testMsg2);
         }
@@ -106,16 +104,19 @@ class MessageBusTest {
         try {
             testMsg1 = mb.awaitMessage(han);
             testMsg2 = mb.awaitMessage(c3po);
-        }
-        catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             assertNotNull(testMsg1);
             assertNotNull(testMsg2);
         }
-        assertEquals(
-                ((ExampleBroadcast)testMsg1).getSenderId(),
-                ((ExampleBroadcast)broadTest1).getSenderId(),
-                ((ExampleBroadcast)testMsg2).getSenderId()
-        );
+        try {
+            assertEquals(
+                    ((ExampleBroadcast) testMsg1).getSenderId(),
+                    ((ExampleBroadcast) broadTest1).getSenderId(),
+                    ((ExampleBroadcast) testMsg2).getSenderId()
+            );
+        } catch (NullPointerException e) {
+            fail();
+        }
     }
 
     @Test
@@ -131,8 +132,14 @@ class MessageBusTest {
         assertDoesNotThrow(()->{ testMsg1 = mb.awaitMessage(han); });  // awaitMessage should work properly
         String han_result = "My name is Han and I am done.";
         mb.complete(exampleEvent1, han_result); // mb resolves future with han_result
-        String result_from_mb = future.get(); // should contain han_result
-        assertEquals(result_from_mb, han_result);
+        try {
+            String result_from_mb = future.get(); // should contain han_result
+            assertEquals(result_from_mb, han_result);
+        }
+        catch (NullPointerException e) {
+            fail();
+        }
+
     }
 
     @Test
@@ -147,8 +154,7 @@ class MessageBusTest {
         try {
             testMsg1 = mb.awaitMessage(han);
             testMsg2 = mb.awaitMessage(c3po);
-        }
-        catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             assertNull(testMsg1);
             assertNull(testMsg2);
         }
@@ -157,21 +163,23 @@ class MessageBusTest {
         try {
             testMsg1 = mb.awaitMessage(han); // Receive the broadcast for han
             testMsg2 = mb.awaitMessage(c3po); // Receive the broadcast for c3po
-        }
-        catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             fail(); // Han should receive a message now, otherwise something is wrong.
         }
         // Assert that both han AND c3po received the broadcast message:
-        assertEquals(
-                ((ExampleBroadcast)testMsg1).getSenderId(),
-                ((ExampleBroadcast)broadTest).getSenderId()
-        );
-        assertEquals(
-                ((ExampleBroadcast)testMsg2).getSenderId(),
-                ((ExampleBroadcast)broadTest).getSenderId()
-        );
+        try {
+            assertEquals(
+                    ((ExampleBroadcast) testMsg1).getSenderId(),
+                    ((ExampleBroadcast) broadTest).getSenderId()
+            );
+            assertEquals(
+                    ((ExampleBroadcast) testMsg2).getSenderId(),
+                    ((ExampleBroadcast) broadTest).getSenderId()
+            );
+        } catch (NullPointerException e) {
+            fail();
+        }
     }
-
     @Test
     void testSendEvent() {
         // Register Han and C3PO to the message bus:
@@ -217,6 +225,10 @@ class MessageBusTest {
             fail(); // If the awaitMessage didn't return a message twice it therefore failed to work properly.
         }
         // Make sure han AND c3po received each a single, different message:
+
+
+         try{
+
         boolean cond = (
             (
                 ((ExampleEvent)testMsg1).getSenderName().equals(((ExampleEvent)exampleEvent2).getSenderName())
@@ -231,6 +243,11 @@ class MessageBusTest {
             )
         );
         assertTrue(cond);
+    }
+        catch (NullPointerException e) {
+        fail();
+        }
+
     }
 
 
