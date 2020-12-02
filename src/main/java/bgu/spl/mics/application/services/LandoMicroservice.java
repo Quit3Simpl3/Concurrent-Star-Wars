@@ -12,7 +12,7 @@ public class LandoMicroservice  extends MicroService {
     public LandoMicroservice(long duration) {
         super("Lando");
     }
-
+    // TODO: how to 100% terminate all threads at once.
     @Override
     protected void initialize() {
        

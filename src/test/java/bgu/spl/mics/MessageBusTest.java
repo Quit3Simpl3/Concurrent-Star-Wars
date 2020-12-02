@@ -255,7 +255,7 @@ class MessageBusTest {
     @Test
     void testAwaitMessage() {
         // c3po is not registered. Should throw IllegalStateException:
-        /*assertThrows(IllegalStateException.class, ()->mb.awaitMessage(c3po));*/
+        assertThrows(IllegalStateException.class, ()->mb.awaitMessage(c3po));
         // register c3po:
         mb.register(c3po);
         // c3po is registered. should receive the broadcast msg:

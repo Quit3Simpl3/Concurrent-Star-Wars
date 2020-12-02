@@ -11,11 +11,9 @@ import java.util.concurrent.TimeUnit;
  *  * No public constructor is allowed except for the empty constructor.
  */
 
-
 public class Future<T> {
 	private boolean isDone;
     private T result;
-	
 	/**
 	 * This should be the the only public constructor in this class.
 	 */
@@ -23,8 +21,6 @@ public class Future<T> {
 		isDone = false;
 		result = null;
 	}
-
-	
 	/**
      * retrieves the result the Future object holds if it has been resolved.
      * This is a blocking method! It waits for the computation in case it has
@@ -72,8 +68,6 @@ public class Future<T> {
      *         elapsed, return null.
      */
 	public T get(long timeout, TimeUnit unit) {
-		
         return null;
 	}
-
 }
