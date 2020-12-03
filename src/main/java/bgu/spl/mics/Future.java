@@ -12,15 +12,18 @@ import java.util.concurrent.TimeUnit;
  */
 
 public class Future<T> {
+	// Private fields:
 	private boolean isDone;
     private T result;
+
 	/**
 	 * This should be the the only public constructor in this class.
 	 */
 	public Future() {
-		isDone = false;
-		result = null;
+		this.isDone = false;
+		this.result = null;
 	}
+
 	/**
      * retrieves the result the Future object holds if it has been resolved.
      * This is a blocking method! It waits for the computation in case it has
@@ -30,13 +33,15 @@ public class Future<T> {
      * 	       
      */
 	public T get() {
-		//TODO throw exe if there is no result
-		if (isDone()) {
-			//TODO return the result
-		}else {
-			//TODO wait for the job to be done
-		}
-		return null;
+		while (!this.isDone()); // Wait until isDone=true
+		return this._get_result(); // return the result
+	}
+
+	/*
+	* returns the result saved in the Future object.
+	 */
+	private T _get_result() {
+		return this.result;
 	}
 	
 	/**
@@ -45,15 +50,16 @@ public class Future<T> {
 	public void resolve (T result) {
 		if(result == null)
 			throw new IllegalArgumentException("null is forbidden");
-		this.result = result;
-		isDone = true;
+
+		this.result = result; // IMPORTANT: do this before setting 'isDone', to prevent get() before setting the result.
+		this.isDone = true;
 	}
 	
 	/**
      * @return true if this object has been resolved, false otherwise
      */
 	public boolean isDone() {
-		return isDone;
+		return this.isDone;
 	}
 	
 	/**
@@ -68,6 +74,15 @@ public class Future<T> {
      *         elapsed, return null.
      */
 	public T get(long timeout, TimeUnit unit) {
-        return null;
+		// Notify thread when isDone=true?
+
+		timestamp_start = // TODO: get current timestamp
+		timestamp = // TODO: get current timestamp
+		do {
+			if (this.isDone()) {
+				return this._get_result();
+			}
+			timestamp = // TODO: get current timestamp
+		} while(timestamp - timestamp_start > timeout);
 	}
 }
