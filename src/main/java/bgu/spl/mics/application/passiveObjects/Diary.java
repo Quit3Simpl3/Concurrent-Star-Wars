@@ -35,8 +35,8 @@ public class Diary {
     /*
     * Setters:
      */
-    public void setTotalAttacks(AtomicInteger totalAttacks) {
-        // TODO
+    public void addTotalAttacks(int totalAttacks) {
+        this.totalAttacks.getAndAdd(totalAttacks);
     }
 
     public void setHanSoloFinish(long HanSoloFinish) {
