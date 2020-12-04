@@ -33,8 +33,18 @@ public class Future<T> {
      * 	       
      */
 	public T get() {
-		while (!this.isDone()); // Wait until isDone=true
-		return this._get_result(); // return the result
+		Runnable checkIsDone = () -> {
+			while (!this.isDone()) {
+				try {
+					this.wait();
+				}
+				catch (InterruptedException e) {}
+			}
+		};
+		Thread checker = new Thread(checkIsDone);
+		checker.start();
+
+		return this._get_result();
 	}
 
 	/*
@@ -53,6 +63,7 @@ public class Future<T> {
 
 		this.result = result; // IMPORTANT: do this before setting 'isDone', to prevent get() before setting the result.
 		this.isDone = true;
+		this.notifyAll(); // TODO: maybe 'notify()' instead? // Update the waiting thread so that it checks isDone()
 	}
 	
 	/**
@@ -74,15 +85,17 @@ public class Future<T> {
      *         elapsed, return null.
      */
 	public T get(long timeout, TimeUnit unit) {
-		// Notify thread when isDone=true?
-
-		timestamp_start = // TODO: get current timestamp
-		timestamp = // TODO: get current timestamp
-		do {
-			if (this.isDone()) {
-				return this._get_result();
+		// TODO: calculate time delta USING TimeUnit
+		boolean time_passed = false;
+		long start = System.currentTimeMillis();
+		while (!time_passed && !this.isDone()) {
+			if (this.isDone()) return this._get_result();
+			time_passed = (System.currentTimeMillis() - start) > timeout;
+			try {
+				this.wait(1); // Thread waits for 1 millis and then checks again
 			}
-			timestamp = // TODO: get current timestamp
-		} while(timestamp - timestamp_start > timeout);
+			catch (InterruptedException ignored) {}
+		}
+		return null;
 	}
 }
