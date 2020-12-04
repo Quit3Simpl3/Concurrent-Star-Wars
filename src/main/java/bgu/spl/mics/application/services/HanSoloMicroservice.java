@@ -13,10 +13,20 @@ import bgu.spl.mics.MicroService;
  */
 public class HanSoloMicroservice extends MicroService {
 
+    /*
+    * Local field: timestamp, Leia sends DeactivationEvent and RecordDiaryBroadcast, then
+    * C3PO and HanSolo both write to Diary.
+    * myAttacksCounter
+    * */
+
     public HanSoloMicroservice() {
         super("Han");
     }
 
+    /*
+    * taskAttack() {...attack}
+    * taskDiary() {write last timestamp and attacks}
+    * */
 
     @Override
     protected void initialize() {
