@@ -1,8 +1,6 @@
 package bgu.spl.mics;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -23,16 +21,17 @@ public class MessageBusImpl implements MessageBus {
 	private static MessageBusImpl instance = null; // Implemented as Singleton
 
 
-	private Map<Class<? extends Event>, ConcurrentLinkedQueue> eventHash;
-	private Map<Class<? extends Broadcast>, ConcurrentLinkedQueue> broadcastHash;
-	private Map<MicroService, ConcurrentLinkedQueue> registeredHash;
-
+	private Map<Class<? extends Event>, ConcurrentLinkedQueue<MicroService>> eventHash;
+	private Map<Class<? extends Broadcast>, ConcurrentLinkedQueue<MicroService>> broadcastHash;
+	private Map<MicroService, ConcurrentLinkedQueue<Message>> microServiceHash;
+	private Map<Event, Future> completeFutre;
 
 	private MessageBusImpl() { // private constructor for singleton
 		// TODO: initialize fields
-		eventHash = new ConcurrentHashMap<Class<? extends Event>, ConcurrentLinkedQueue>() {};
-		broadcastHash = new ConcurrentHashMap<Class<? extends Broadcast>, ConcurrentLinkedQueue>() {};
-		registeredHash = new ConcurrentHashMap<MicroService, ConcurrentLinkedQueue>() {};
+		eventHash = new ConcurrentHashMap<Class<? extends Event>, ConcurrentLinkedQueue<MicroService>>() {};
+		broadcastHash = new ConcurrentHashMap<Class<? extends Broadcast>, ConcurrentLinkedQueue<MicroService>>() {};
+		microServiceHash = new ConcurrentHashMap<MicroService, ConcurrentLinkedQueue<Message>>() {};
+		completeFutre = new ConcurrentHashMap<Event, Future>();
 	}
 
 	// static method to create instance
@@ -66,30 +65,58 @@ public class MessageBusImpl implements MessageBus {
 
 	@Override @SuppressWarnings("unchecked")
 	public <T> void complete(Event<T> e, T result) {
-		
+		if (completeFutre.get(e) != null) { //not sure its can be..
+			completeFutre.get(e).resolve(result);
+
+			// not sure what to do with the result
+		}
+
 	}
 
 	@Override
-	public void sendBroadcast(Broadcast b) {
+	public synchronized void sendBroadcast(Broadcast b) {
+		if
+		(broadcastHash == null || broadcastHash.isEmpty() ||
+		!(broadcastHash.containsKey(b.getClass()))|| broadcastHash.get(b.getClass()).isEmpty())
+		{
+			throw new IllegalArgumentException("there is no one to get the massege"); //TODO : i dont think its need to be exc..maybe print?
+		} else
+		{
+			for(Object j : broadcastHash.get(b.getClass())) {
+				microServiceHash.get(j).add(b);
+			}
+
+		}
 		
 	}
 
 	
 	@Override
-	public <T> Future<T> sendEvent(Event<T> e) {
-		
-        return null;
+	public synchronized <T> Future<T> sendEvent(Event<T> e) {
+		if
+		(eventHash == null || eventHash.isEmpty() ||
+		!(eventHash.containsKey(e.getClass()))|| eventHash.get(e.getClass()).isEmpty())
+		{
+			throw new IllegalArgumentException("there is no one to get the massege"); //TODO : i dont think its need to be exc..maybe null?
+			//return null;
+		}
+		microServiceHash.get(eventHash.get(e.getClass()).peek()).add(e);
+		eventHash.get(e.getClass()).add(eventHash.get(e.getClass()).poll());
+		Future<T> theFuture = new Future<>();
+
+
+        return theFuture;
 	}
 
 	@Override
 	public void register(MicroService m) {
 		ConcurrentLinkedQueue<Message> iRegister = new ConcurrentLinkedQueue();
-		registeredHash.put(m,iRegister);
+		microServiceHash.put(m,iRegister);
 	}
 
 	@Override
 	public void unregister(MicroService m) {
-		registeredHash.remove(m);  //TODO : need to remove from broadcast and event and what to do with missions i didnt finish
+		microServiceHash.remove(m);  //TODO : need to remove from broadcast and event and what to do with missions i didnt finish
 		
 	}
 
