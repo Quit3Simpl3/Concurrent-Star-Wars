@@ -1,6 +1,8 @@
 package bgu.spl.mics;
 
+
 import java.util.Map;
+
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -23,8 +25,10 @@ public class MessageBusImpl implements MessageBus {
 
 	private Map<Class<? extends Event>, ConcurrentLinkedQueue> eventHash;
 	private Map<Class<? extends Broadcast>, ConcurrentLinkedQueue> broadcastHash;
+
 	private Map<MicroService, ConcurrentLinkedQueue> microServiceHash;
 	private Map<Event, Future> completeFutre;
+
 
 	private MessageBusImpl() { // private constructor for singleton
 		// TODO: initialize fields
@@ -32,6 +36,7 @@ public class MessageBusImpl implements MessageBus {
 		broadcastHash = new ConcurrentHashMap<Class<? extends Broadcast>, ConcurrentLinkedQueue>() {};
 		microServiceHash = new ConcurrentHashMap<MicroService, ConcurrentLinkedQueue>() {};
 		completeFutre = new ConcurrentHashMap<Event, Future>();
+
 	}
 
 	// static method to create instance
@@ -88,12 +93,15 @@ public class MessageBusImpl implements MessageBus {
 	@Override
 	public void register(MicroService m) {
 		ConcurrentLinkedQueue<Message> iRegister = new ConcurrentLinkedQueue();
+
 		microServiceHash.put(m,iRegister);
+
 	}
 
 	@Override
 	public void unregister(MicroService m) {
 		microServiceHash.remove(m);  //TODO : need to remove from broadcast and event and what to do with missions i didnt finish
+
 		
 	}
 
