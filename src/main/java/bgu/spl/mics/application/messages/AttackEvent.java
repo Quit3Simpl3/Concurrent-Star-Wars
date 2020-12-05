@@ -8,6 +8,7 @@ public class AttackEvent implements Event<Boolean> {
     public AttackEvent (List<Integer>  serialNumbers) {
         ewoksForAttack =  serialNumbers;
     }
+
 	public List<Integer> getEwokForAttack() {
         return ewoksForAttack;
     }

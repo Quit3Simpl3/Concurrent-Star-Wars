@@ -12,7 +12,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 
 public class MessageBusImpl implements MessageBus {
-	// TODO: fields
 	// main-queue: stores the messages sent to the MB for processing.
 	// dictionary of (key=Event type (Event.class), value=Event) that holds the events the events sent to the MB
 	// dictionary of (key=MicroService, value=queue of messages) (NOT in MicroService class! See page 8).
@@ -28,7 +27,6 @@ public class MessageBusImpl implements MessageBus {
 	private Map<Event, Future> futureMap;
 
 	private MessageBusImpl() { // private constructor for singleton
-		// TODO: initialize fields
 		eventHash = new ConcurrentHashMap<Class<? extends Event>, ConcurrentLinkedQueue<MicroService>>() {};
 		broadcastHash = new ConcurrentHashMap<Class<? extends Broadcast>, ConcurrentLinkedQueue<MicroService>>() {};
 		microServiceHash = new ConcurrentHashMap<MicroService, ConcurrentLinkedQueue<Message>>() {};
@@ -46,9 +44,9 @@ public class MessageBusImpl implements MessageBus {
 	private boolean _is_hashMap_valid(Map hashMap, Object obj, ConcurrentLinkedQueue queue) {
 		return (
 				hashMap == null
-						|| hashMap.isEmpty()
-						|| !hashMap.containsKey(obj.getClass())
-						|| queue.isEmpty()
+				|| hashMap.isEmpty()
+				|| !hashMap.containsKey(obj.getClass())
+				|| queue.isEmpty()
 		);
 	}
 

@@ -19,8 +19,6 @@ package bgu.spl.mics;
  * <p>
  */
 public abstract class MicroService implements Runnable { 
-    
-
     /**
      * @param name the micro-service name (used mainly for debugging purposes -
      *             does not have to be unique)
@@ -91,7 +89,8 @@ public abstract class MicroService implements Runnable {
      * 	       			null in case no micro-service has subscribed to {@code e.getClass()}.
      */
     protected final <T> Future<T> sendEvent(Event<T> e) {
-    	
+        // 1. msgBus.sendEvent(e)
+        // 2. save Future object into hashMap
         return null; 
     }
 
@@ -148,5 +147,4 @@ public abstract class MicroService implements Runnable {
     public final void run() {
     	
     }
-
 }

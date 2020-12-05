@@ -18,6 +18,10 @@ public class R2D2Microservice extends MicroService {
 
     @Override
     protected void initialize() {
-
+        // 1. register to MsgBus
+        // 2. subscribe to DeactivationEvent
+        // 3. awaitMessage
     }
+
+    // TODO: add private method deactivate()
 }
