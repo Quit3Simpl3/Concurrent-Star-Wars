@@ -1,6 +1,7 @@
 package bgu.spl.mics;
 
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -24,14 +25,31 @@ public class MessageBusImpl implements MessageBus {
 	private Map<Class<? extends Event>, ConcurrentLinkedQueue<MicroService>> eventHash;
 	private Map<Class<? extends Broadcast>, ConcurrentLinkedQueue<MicroService>> broadcastHash;
 	private Map<MicroService, ConcurrentLinkedQueue<Message>> microServiceHash;
-	private Map<Event, Future> completeFutre;
+	private Map<Event, Future> futureMap;
 
 	private MessageBusImpl() { // private constructor for singleton
 		// TODO: initialize fields
 		eventHash = new ConcurrentHashMap<Class<? extends Event>, ConcurrentLinkedQueue<MicroService>>() {};
 		broadcastHash = new ConcurrentHashMap<Class<? extends Broadcast>, ConcurrentLinkedQueue<MicroService>>() {};
 		microServiceHash = new ConcurrentHashMap<MicroService, ConcurrentLinkedQueue<Message>>() {};
-		completeFutre = new ConcurrentHashMap<Event, Future>();
+		futureMap = new ConcurrentHashMap<Event, Future>();
+	}
+
+	private boolean _is_hashMap_valid(Map hashMap, Object obj) {
+		return (
+				hashMap == null
+						|| hashMap.isEmpty()
+						|| !hashMap.containsKey(obj.getClass())
+		);
+	}
+
+	private boolean _is_hashMap_valid(Map hashMap, Object obj, ConcurrentLinkedQueue queue) {
+		return (
+				hashMap == null
+						|| hashMap.isEmpty()
+						|| !hashMap.containsKey(obj.getClass())
+						|| queue.isEmpty()
+		);
 	}
 
 	// static method to create instance
@@ -63,55 +81,49 @@ public class MessageBusImpl implements MessageBus {
 		}
     }
 
-	@Override @SuppressWarnings("unchecked")
+	@Override
 	public <T> void complete(Event<T> e, T result) {
-		if (completeFutre.get(e) != null) { //not sure its can be..
-			completeFutre.get(e).resolve(result);
+		if (!_is_hashMap_valid(futureMap, e))
+			throw new IllegalArgumentException("No valid argument provided.");
 
-			// not sure what to do with the result
-		}
-
+		this.futureMap.get(e).resolve(result);
 	}
 
 	@Override
 	public synchronized void sendBroadcast(Broadcast b) {
-		if
-		(broadcastHash == null || broadcastHash.isEmpty() ||
-		!(broadcastHash.containsKey(b.getClass()))|| broadcastHash.get(b.getClass()).isEmpty())
-		{
-			throw new IllegalArgumentException("there is no one to get the massege"); //TODO : i dont think its need to be exc..maybe print?
-		} else
-		{
-			for(Object j : broadcastHash.get(b.getClass())) {
-				microServiceHash.get(j).add(b);
-			}
+		if (!_is_hashMap_valid(broadcastHash, b, broadcastHash.get(b.getClass())))
+			// DO NOTHING (msg goes to trash)
+			return;
 
+		for (MicroService microService : broadcastHash.get(b.getClass())) {
+			microServiceHash.get(microService).add(b);
 		}
-		
+		// Notify all waiting threads:
+		notifyAll();
 	}
 
-	
 	@Override
 	public synchronized <T> Future<T> sendEvent(Event<T> e) {
-		if
-		(eventHash == null || eventHash.isEmpty() ||
-		!(eventHash.containsKey(e.getClass()))|| eventHash.get(e.getClass()).isEmpty())
-		{
-			throw new IllegalArgumentException("there is no one to get the massege"); //TODO : i dont think its need to be exc..maybe null?
-			//return null;
-		}
+		if (!_is_hashMap_valid(eventHash, e, eventHash.get(e.getClass())))
+			// throw new IllegalArgumentException("No valid argument provided.");
+			// DO NOTHING (msg goes to trash)
+			return null;
+
 		microServiceHash.get(eventHash.get(e.getClass()).peek()).add(e);
 		eventHash.get(e.getClass()).add(eventHash.get(e.getClass()).poll());
-		Future<T> theFuture = new Future<>();
-
-
-        return theFuture;
+		// Handle future object:
+		Future<T> future = new Future<>();
+		this.futureMap.put(e, future);
+		// Notify all waiting threads:
+		notifyAll();
+		// Return the future object to the sending MicroService:
+        return future;
 	}
 
 	@Override
 	public void register(MicroService m) {
 		ConcurrentLinkedQueue<Message> iRegister = new ConcurrentLinkedQueue();
-		microServiceHash.put(m,iRegister);
+		microServiceHash.put(m, iRegister);
 	}
 
 	@Override
@@ -122,7 +134,21 @@ public class MessageBusImpl implements MessageBus {
 
 	@Override
 	public Message awaitMessage(MicroService m) throws InterruptedException {
-		
-		return null;
+		if (this.microServiceHash == null || !this.microServiceHash.containsKey(m))
+			throw new IllegalStateException("The provided MicroService is not registered.");
+
+		while (this.microServiceHash.get(m).isEmpty()) {
+			try {
+				this.wait();
+			}
+			catch (InterruptedException e) {}
+		}
+
+		try {
+			return this.microServiceHash.get(m).remove();
+		}
+		catch (NoSuchElementException e) {
+			return awaitMessage(m);
+		}
 	}
 }

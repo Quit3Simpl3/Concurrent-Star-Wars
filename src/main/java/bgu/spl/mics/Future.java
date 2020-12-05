@@ -33,7 +33,7 @@ public class Future<T> {
      * 	       
      */
 	public T get() {
-		Runnable checkIsDone = () -> {
+		/*Runnable checkIsDone = () -> {
 			while (!this.isDone()) {
 				try {
 					this.wait();
@@ -42,7 +42,14 @@ public class Future<T> {
 			}
 		};
 		Thread checker = new Thread(checkIsDone);
-		checker.start();
+		checker.start();*/ // Is this non-blocking?
+
+		while (!this.isDone()) {
+			try {
+				this.wait();
+			}
+			catch (InterruptedException e) {}
+		}
 
 		return this._get_result();
 	}
