@@ -1,5 +1,9 @@
 package bgu.spl.mics.application.passiveObjects;
 
+import bgu.spl.mics.MessageBusImpl;
+
+import java.util.Objects;
+
 /**
  * Passive data-object representing a forest creature summoned when HanSolo and C3PO receive AttackEvents.
  * You must not alter any of the given public methods of this class.
@@ -7,10 +11,10 @@ package bgu.spl.mics.application.passiveObjects;
  * You may add fields and methods to this class as you see fit (including public methods).
  */
 public class Ewok {
-	int serialNumber;
+    int serialNumber;
 	boolean available;
 
-	public  Ewok() {/*TODO: what happens to serialNumber and available? Can we prevent usage of default constructor?*/}
+	public Ewok() {/*TODO: Can we prevent usage of default constructor?*/}
 
 	public Ewok(int serialNumber) {
 	    this.serialNumber = serialNumber;
