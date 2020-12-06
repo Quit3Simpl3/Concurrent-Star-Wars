@@ -2,6 +2,7 @@ package bgu.spl.mics;
 
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -30,7 +31,7 @@ public class MessageBusImpl implements MessageBus {
 		eventHash = new ConcurrentHashMap<Class<? extends Event>, ConcurrentLinkedQueue<MicroService>>() {};
 		broadcastHash = new ConcurrentHashMap<Class<? extends Broadcast>, ConcurrentLinkedQueue<MicroService>>() {};
 		microServiceHash = new ConcurrentHashMap<MicroService, ConcurrentLinkedQueue<Message>>() {};
-		futureMap = new ConcurrentHashMap<Event, Future>();
+		futureMap = new ConcurrentHashMap<Event, Future>(); // TODO: Maybe Event<?>, Future<?> ?
 	}
 
 	private boolean _is_hashMap_valid(Map hashMap, Object obj) {
@@ -50,10 +51,11 @@ public class MessageBusImpl implements MessageBus {
 		);
 	}
 
-	// static method to create instance
-	public static MessageBusImpl getInstance() {
-		if (instance == null)
-			instance = new MessageBusImpl();;
+	// static synchronized method to get or create instance:
+	public static synchronized MessageBusImpl getInstance() {
+		if (Objects.isNull(instance))
+			instance = new MessageBusImpl();
+
 		return instance;
 	}
 
@@ -61,7 +63,7 @@ public class MessageBusImpl implements MessageBus {
 	public <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m) {
 		if (eventHash == null || eventHash.get(type) == null) {
 			ConcurrentLinkedQueue<MicroService> eventSubscribList = new ConcurrentLinkedQueue<MicroService>();
-			eventHash.put(type,eventSubscribList);
+			eventHash.put(type, eventSubscribList);
 		}
 		if(!eventHash.get(type).contains(m)) { //TODO : we need to know if i can add twice
 			eventHash.get(type).add(m);
