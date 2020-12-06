@@ -1,5 +1,8 @@
 package bgu.spl.mics;
 
+import java.util.HashMap;
+import java.util.Objects;
+
 /**
  * The MicroService is an abstract class that any micro-service in the system
  * must extend. The abstract MicroService class is responsible to get and
@@ -18,13 +21,42 @@ package bgu.spl.mics;
  * Only private fields and methods may be added to this class.
  * <p>
  */
-public abstract class MicroService implements Runnable { 
+public abstract class MicroService implements Runnable {
+    // Private fields:
+    String name;
+    MessageBusImpl messageBus;
+    HashMap<Class<? extends Message>, Callback<? extends Message>> subscriptions;
+    boolean terminate;
+
     /**
      * @param name the micro-service name (used mainly for debugging purposes -
      *             does not have to be unique)
      */
     public MicroService(String name) {
-    	
+    	this.name = name;
+    	this.messageBus = MessageBusImpl.getInstance();
+    	this.terminate = false;
+    }
+
+    /**
+    * Adds a new Event or Broadcast subscription to the HashMap with the callback {@code callback}.
+    * @param <M>        The type of the Message - Event or Broadcast.
+    * @param type       The {@link Class} representing the type of Message.
+    * @param callback   The provided callback to associate with this Message type.
+     */
+    private <M extends Message> void addSubscription(Class<M> type, Callback<M> callback) {
+        this.subscriptions.put(type, callback); // Adds or replaces
+    }
+
+    /**
+     *
+     */
+    private boolean executeCallback(Message msg) {
+        // Get the callback related to msg type:
+        Callback callback = this.subscriptions.get(msg.getClass());
+        // Execute the callback:
+        callback.call(msg);
+        return true; // TODO: maybe return 'true' only when no exception was thrown?
     }
 
     /**
@@ -49,7 +81,10 @@ public abstract class MicroService implements Runnable {
      *                 queue.
      */
     protected final <T, E extends Event<T>> void subscribeEvent(Class<E> type, Callback<E> callback) {
-    	
+    	// Subscribe to event of type 'type' in msg bus:
+        this.messageBus.subscribeEvent(type, this);
+        // Store call back in subscriptions Hash Map:
+        this.addSubscription(type, callback);
     }
 
     /**
@@ -73,7 +108,10 @@ public abstract class MicroService implements Runnable {
      *                 queue.
      */
     protected final <B extends Broadcast> void subscribeBroadcast(Class<B> type, Callback<B> callback) {
-    	
+        // Subscribe to broadcast of type 'type' in msg bus:
+        this.messageBus.subscribeBroadcast(type, this);
+        // Store call back in subscriptions Hash Map:
+        this.addSubscription(type, callback);
     }
 
     /**
@@ -89,9 +127,8 @@ public abstract class MicroService implements Runnable {
      * 	       			null in case no micro-service has subscribed to {@code e.getClass()}.
      */
     protected final <T> Future<T> sendEvent(Event<T> e) {
-        // 1. msgBus.sendEvent(e)
-        // 2. save Future object into hashMap
-        return null; 
+        // Send the event throw the msg bus and return the provided Future object:
+        return this.messageBus.sendEvent(e);
     }
 
     /**
@@ -101,7 +138,7 @@ public abstract class MicroService implements Runnable {
      * @param b The broadcast message to send
      */
     protected final void sendBroadcast(Broadcast b) {
-    	
+    	this.messageBus.sendBroadcast(b);
     }
 
     /**
@@ -115,7 +152,7 @@ public abstract class MicroService implements Runnable {
      *               {@code e}.
      */
     protected final <T> void complete(Event<T> e, T result) {
-    	
+    	this.messageBus.complete(e, result);
     }
 
     /**
@@ -128,7 +165,7 @@ public abstract class MicroService implements Runnable {
      * message.
      */
     protected final void terminate() {
-    	
+    	this.terminate = true;
     }
 
     /**
@@ -136,15 +173,39 @@ public abstract class MicroService implements Runnable {
      *         construction time and is used mainly for debugging purposes.
      */
     public final String getName() {
-        return null;
+        return this.name;
     }
 
     /**
-     * The entry point of the micro-service. TODO: you must complete this code
+     * The entry point of the micro-service.
      * otherwise you will end up in an infinite loop.
      */
     @Override
     public final void run() {
-    	
+    	// register with msg bus
+        this.messageBus.register(this);
+        // run the derived class's initialize() method (the derived handles subscribing to msg types)
+        this.initialize();
+        // message loop:
+        boolean callback_called = false;
+        while (!this.terminate) {
+            Message msg = null;
+            try {
+                callback_called = false;
+                msg = this.messageBus.awaitMessage(this);
+                if (!Objects.isNull(msg)) // Make sure msg is not null
+                    callback_called = this.executeCallback(msg);
+            }
+            catch (InterruptedException e) {
+                if (this.terminate) {
+                    // When received a message but callback wasn't called:
+                    if (!callback_called && !Objects.isNull(msg))
+                        this.executeCallback(msg); // Finish handling last received message
+                    break; // Exit the run-loop
+                }
+            }
+        }
+        // Unregister this MicroService from the msg bus:
+        this.messageBus.unregister(this);
     }
 }
