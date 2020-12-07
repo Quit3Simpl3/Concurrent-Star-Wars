@@ -118,18 +118,21 @@ public class MessageBusImpl implements MessageBus {
 
 	@Override
 	public void register(MicroService m) {
-		ConcurrentLinkedQueue<Message> iRegister = new ConcurrentLinkedQueue();
-		microServiceHash.put(m, iRegister);
+		if (!microServiceHash.containsKey(m)) {
+			ConcurrentLinkedQueue<Message> iRegister = new ConcurrentLinkedQueue();
+			microServiceHash.put(m, iRegister);
+		}
 	}
 
 	@Override
 	public void unregister(MicroService m) {
-		microServiceHash.remove(m);  //TODO : need to remove from broadcast and event and what to do with missions i didnt finish
-		
+		microServiceHash.remove(m);
+		// TODO: remove m from eventHash and broadcastHasg
+
 	}
 
 	@Override
-	public Message awaitMessage(MicroService m) throws InterruptedException {
+	public Message awaitMessage(MicroService m) throws InterruptedException, IllegalStateException {
 		if (this.microServiceHash == null || !this.microServiceHash.containsKey(m))
 			throw new IllegalStateException("The provided MicroService is not registered.");
 

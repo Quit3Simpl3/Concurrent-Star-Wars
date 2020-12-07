@@ -1,12 +1,14 @@
 package bgu.spl.mics.application.services;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 import bgu.spl.mics.Callback;
 import bgu.spl.mics.Event;
 import bgu.spl.mics.Future;
 import bgu.spl.mics.MicroService;
+import bgu.spl.mics.application.messages.BombDestroyerEvent;
+import bgu.spl.mics.application.messages.DeactivationEvent;
 import bgu.spl.mics.application.messages.TerminateBroadcast;
 import bgu.spl.mics.application.passiveObjects.Attack;
 import bgu.spl.mics.application.messages.AttackEvent;
@@ -33,6 +35,31 @@ public class LeiaMicroservice extends MicroService {
 		diary = Diary.getInstance();
     }
 
+    private boolean awaitAttacks() {
+        Queue<Future<Boolean>> futuresQueue = new LinkedList<>();
+        // Enqueue attack future objects:
+        for (Future<Boolean> future : this.attackFutures) {
+            futuresQueue.add(future);
+        }
+        while (!futuresQueue.isEmpty()) {
+            Future<Boolean> future = futuresQueue.remove();
+            Boolean result = future.get(1, TimeUnit.MILLISECONDS); // TODO: How many millis are enough?
+            if (Objects.isNull(result)) // If attack isn't finished, put the future back in the queue to be checked again.
+                futuresQueue.add(future);
+        }
+        return true;
+    }
+
+    private boolean sendDeactivationEvent() {
+        Future<Boolean> future = sendEvent(new DeactivationEvent());
+        return future.get(); // Wait until R2D2 finishes.
+    }
+
+    private void sendBombDestroyerEvent() {
+        Future<Boolean> future = sendEvent(new BombDestroyerEvent());
+        future.get(); // Wait until Lando finishes.
+    }
+
     @Override
     protected void initialize() {
         Callback<TerminateBroadcast> terminated = new Callback<TerminateBroadcast>(){
@@ -46,8 +73,16 @@ public class LeiaMicroservice extends MicroService {
 
         // Send attack events and save their Future objects:
         for (int i = 0; i < attackFutures.length ;i++) {
-            Future<Boolean> future = sendEvent(new AttackEvent(attacks[i]));
+            Future<Boolean> future = null;
+            while (Objects.isNull(future)) { // No one received the message
+                future = sendEvent(new AttackEvent(attacks[i])); // Send the message again until someone receives it
+            }
             this.attackFutures[i] = future;
         }
+
+        // Await the attacks' results:
+        if (awaitAttacks())
+            if (sendDeactivationEvent())
+                sendBombDestroyerEvent();
     }
 }
