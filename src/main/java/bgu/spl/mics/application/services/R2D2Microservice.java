@@ -25,7 +25,7 @@ public class R2D2Microservice extends MicroService {
 
     @Override
     protected void initialize() {
-        Callback<TerminateBroadcast> terminated = new Callback<TerminateBroadcast>(){
+        Callback<TerminateBroadcast> terminated = new Callback<TerminateBroadcast>() {
             @Override
             public void call(TerminateBroadcast c) {
                 diary.setR2D2Terminate(System.currentTimeMillis());
@@ -33,22 +33,19 @@ public class R2D2Microservice extends MicroService {
 
             }
         };
-        this.subscribeBroadcast(TerminateBroadcast.class,terminated);
+        this.subscribeBroadcast(TerminateBroadcast.class, terminated);
 
     }
-    Callback<DeactivationEvent> terminated = new Callback<DeactivationEvent>(){
 
+    Callback<DeactivationEvent> terminated = new Callback<DeactivationEvent>() {
         @Override
         public void call(DeactivationEvent c) {
-            try{
-
-               Thread.sleep(duration);
-               diary.setR2D2Deactivate(System.currentTimeMillis());
-               complete();
-            }catch (InterruptedException e){
-
+            try {
+                Thread.sleep(duration);
+                diary.setR2D2Deactivate(System.currentTimeMillis());
+                complete(c, true);
             }
-
-    }
-
+            catch (InterruptedException e) {}
+        }
+    };
 }
