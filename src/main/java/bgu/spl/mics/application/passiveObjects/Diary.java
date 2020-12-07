@@ -32,20 +32,48 @@ public class Diary {
         this.LandoTerminate = 0;
     }
 
+    public void updateHanSolo(int attacks, long finish, long terminate) {
+        if (finish > 0)
+            setHanSoloFinish(finish);
+        if (terminate > 0)
+            setHanSoloTerminate(terminate);
+        if (attacks > 0)
+            addTotalAttacks(attacks);
+    }
+
+    public void updateC3PO(int attacks, long finish, long terminate) {
+        if (finish > 0)
+            setC3POFinish(finish);
+        if (terminate > 0)
+            setC3POTerminate(terminate);
+        if (attacks > 0)
+            addTotalAttacks(attacks);
+    }
+
     /*
     * Setters:
      */
-    public void addTotalAttacks(int totalAttacks) {
+    private void addTotalAttacks(int totalAttacks) {
         this.totalAttacks.getAndAdd(totalAttacks);
     }
 
-    public void setHanSoloFinish(long HanSoloFinish) {
+    // HanSolo and C3PO setters:
+    private void setHanSoloFinish(long HanSoloFinish) {
         this.HanSoloFinish = HanSoloFinish;
     }
 
-    public void setC3POFinish(long C3POFinish) {
+    private void setC3POFinish(long C3POFinish) {
         this.C3POFinish = C3POFinish;
     }
+
+    private void setHanSoloTerminate(long HanSoloTerminate) {
+        this.HanSoloTerminate = HanSoloTerminate;
+    }
+
+    private void setC3POTerminate(long C3POTerminate) {
+        this.C3POTerminate = C3POTerminate;
+    }
+    ////
 
     public void setR2D2Deactivate(long R2D2Deactivate) {
         this.R2D2Deactivate = R2D2Deactivate;
@@ -53,14 +81,6 @@ public class Diary {
 
     public void setLeiaTerminate(long LeiaTerminate) {
         this.LeiaTerminate = LeiaTerminate;
-    }
-
-    public void setHanSoloTerminate(long HanSoloTerminate) {
-        this.HanSoloTerminate = HanSoloTerminate;
-    }
-
-    public void setC3POTerminate(long C3POTerminate) {
-        this.C3POTerminate = C3POTerminate;
     }
 
     public void setR2D2Terminate(long R2D2Terminate) {
