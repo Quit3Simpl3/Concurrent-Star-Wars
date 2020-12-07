@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
+import java.util.List;
+import java.util.Objects;
+
 /**
  * Passive object representing the resource manager.
  * <p>
@@ -15,14 +18,14 @@ import java.util.Objects;
 public class Ewoks {
     private static Ewoks instance = null;
     private Ewok[] ewoks;
-
+  
     public static synchronized Ewoks getInstance() {
         if (Objects.isNull(instance))
             instance = new Ewoks();
 
         return instance;
     }
-
+  
     public void createEwoks(int ewoks) {
         this.ewoks = new Ewok[ewoks];
         for (int i = 0; i < ewoks; i++) { // Insert each new Ewok into the array
