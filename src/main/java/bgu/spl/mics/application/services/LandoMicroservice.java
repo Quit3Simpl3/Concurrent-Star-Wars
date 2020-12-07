@@ -18,7 +18,6 @@ public class LandoMicroservice  extends MicroService {
     Broadcast TerminateBroadcast;
 
     public LandoMicroservice(long duration) {
-
         super("Lando");
         this.duration = duration;
         diary = Diary.getInstance();
@@ -26,37 +25,26 @@ public class LandoMicroservice  extends MicroService {
 
     @Override
     protected void initialize() {
-
-    Callback<TerminateBroadcast> terminated = new Callback<TerminateBroadcast>(){
-        @Override
-        public void call(TerminateBroadcast c) {
-            diary.setLandoTerminate(System.currentTimeMillis());
-            terminate();
-
-        }
-    };
+        Callback<TerminateBroadcast> terminated = new Callback<TerminateBroadcast>() {
+            @Override
+            public void call(TerminateBroadcast c) {
+                diary.setLandoTerminate(System.currentTimeMillis());
+                terminate();
+            }
+        };
         this.subscribeBroadcast(TerminateBroadcast.class,terminated);
 
-
-    Callback<BombDestroyerEvent> bombDestroy = new Callback<BombDestroyerEvent>() {
-        @Override
-        public void call(BombDestroyerEvent c) {
-
-            try{
-
-                Thread.sleep(duration);
-                complete(c,true);
-                sendBroadcast(TerminateBroadcast);
-
-            }catch (InterruptedException e) {
-
-
+        Callback<BombDestroyerEvent> bombDestroy = new Callback<BombDestroyerEvent>() {
+            @Override
+            public void call(BombDestroyerEvent c) {
+                try {
+                    Thread.sleep(duration);
+                    complete(c,true);
+                    sendBroadcast(TerminateBroadcast);
+                }
+                catch (InterruptedException e) {}
             }
-        }
-    };
-    subscribeEvent(BombDestroyerEvent.class,bombDestroy);
-
-}
-
-
+        };
+        subscribeEvent(BombDestroyerEvent.class,bombDestroy);
+    }
 }
