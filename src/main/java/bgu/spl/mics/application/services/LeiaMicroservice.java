@@ -5,6 +5,7 @@ import java.util.List;
 
 import bgu.spl.mics.Callback;
 import bgu.spl.mics.Event;
+import bgu.spl.mics.Future;
 import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.TerminateBroadcast;
 import bgu.spl.mics.application.passiveObjects.Attack;
@@ -22,20 +23,17 @@ import bgu.spl.mics.application.passiveObjects.Diary;
 public class LeiaMicroservice extends MicroService {
 	private Attack[] attacks;
 	private Diary diary;
-	private Object [][] results;
-	private int counter;
+	private Future<Boolean>[] attacksFutures;
+
 
 	
     public LeiaMicroservice(Attack[] attacks) {
         super("Leia");
 		this.attacks = attacks;
+		attacksFutures = new Future[attacks.length];
 		diary = Diary.getInstance();
-        results = new Object[attacks.length][3];   // 0 - Attack, 1 - AttackEvent, 2- future
-        for (int i = 0; i<attacks.length;i++) {
-            results[i][0] = attacks[i];
-            results[i][1] = new AttackEvent(attacks[i]);
-        }
-        counter = attacks.length;
+
+
     }
 
     @Override
@@ -51,9 +49,9 @@ public class LeiaMicroservice extends MicroService {
         };
         this.subscribeBroadcast(TerminateBroadcast.class,terminated);
 
-        for (int j=0 ;j<=counter ;j++) {
-            results[j][2] = sendEvent((Event)results[j][1]);
-
+        for (int j=0 ;j<attacksFutures.length ;j++) {
+            AttackEvent attack = new AttackEvent(attacks[j]);
+            attacksFutures[j] = sendEvent(attack);
         }
 
 

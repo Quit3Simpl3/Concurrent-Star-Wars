@@ -49,7 +49,7 @@ public class LandoMicroservice  extends MicroService {
                 sendBroadcast(TerminateBroadcast);
 
             }catch (InterruptedException e) {
-                 complete(c,false);
+
 
             }
         }
