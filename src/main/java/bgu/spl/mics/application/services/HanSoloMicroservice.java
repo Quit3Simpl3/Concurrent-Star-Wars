@@ -9,6 +9,8 @@ import bgu.spl.mics.application.passiveObjects.Attack;
 import bgu.spl.mics.application.passiveObjects.Diary;
 import bgu.spl.mics.application.passiveObjects.Ewoks;
 
+import java.util.concurrent.CountDownLatch;
+
 /**
  * HanSoloMicroservices is in charge of the handling {@link AttackEvent}s.
  * This class may not hold references for objects which it is not responsible for:
@@ -20,11 +22,14 @@ import bgu.spl.mics.application.passiveObjects.Ewoks;
 public class HanSoloMicroservice extends MicroService {
     private Diary diary;
     private Ewoks ewoks;
+    private CountDownLatch init;
 
-    public HanSoloMicroservice() {
+
+    public HanSoloMicroservice(CountDownLatch init) {
         super("Han");
         diary = Diary.getInstance();
         ewoks = Ewoks.getInstance();
+        this.init = init;
     }
 
     @Override
@@ -55,5 +60,6 @@ public class HanSoloMicroservice extends MicroService {
             }
         };
         this.subscribeBroadcast(TerminateBroadcast.class,terminated);
+        init.countDown();
     }
 }

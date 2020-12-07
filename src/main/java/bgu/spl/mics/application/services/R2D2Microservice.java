@@ -5,6 +5,8 @@ import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.*;
 import bgu.spl.mics.application.passiveObjects.*;
 
+import java.util.concurrent.CountDownLatch;
+
 /**
  * R2D2Microservices is in charge of the handling {@link DeactivationEvent}.
  * This class may not hold references for objects which it is not responsible for:
@@ -16,16 +18,18 @@ import bgu.spl.mics.application.passiveObjects.*;
 public class R2D2Microservice extends MicroService {
     private long duration;
     private Diary diary;
+    private CountDownLatch init;
 
-    public R2D2Microservice(long duration) {
+    public R2D2Microservice(long duration,CountDownLatch init) {
         super("R2D2");
         this.duration = duration;
         diary = Diary.getInstance();
+        this.init = init;
     }
 
     @Override
     protected void initialize() {
-        Callback<TerminateBroadcast> terminated = new Callback<TerminateBroadcast>(){
+        Callback<TerminateBroadcast> terminated = new Callback<TerminateBroadcast>() {
             @Override
             public void call(TerminateBroadcast c) {
                 diary.setR2D2Terminate(System.currentTimeMillis());
@@ -33,22 +37,21 @@ public class R2D2Microservice extends MicroService {
 
             }
         };
-        this.subscribeBroadcast(TerminateBroadcast.class,terminated);
+        this.subscribeBroadcast(TerminateBroadcast.class, terminated);
+        Callback<DeactivationEvent> Deactivation = new Callback<DeactivationEvent>() {
+            @Override
+            public void call(DeactivationEvent c) {
+                try {
 
-    }
-    Callback<DeactivationEvent> terminated = new Callback<DeactivationEvent>(){
+                    Thread.sleep(duration);
+                    diary.setR2D2Deactivate(System.currentTimeMillis());
+                    //        complete();
+                } catch (InterruptedException e) {
 
-        @Override
-        public void call(DeactivationEvent c) {
-            try{
-
-               Thread.sleep(duration);
-               diary.setR2D2Deactivate(System.currentTimeMillis());
-               complete();
-            }catch (InterruptedException e){
+                }
 
             }
-
+        };
+        init.countDown();
     }
-
 }

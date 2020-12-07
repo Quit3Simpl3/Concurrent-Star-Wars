@@ -7,6 +7,8 @@ import bgu.spl.mics.application.messages.BombDestroyerEvent;
 import bgu.spl.mics.application.messages.TerminateBroadcast;
 import bgu.spl.mics.application.passiveObjects.Diary;
 
+import java.util.concurrent.CountDownLatch;
+
 /**
  * LandoMicroservice
  * You can add private fields and public methods to this class.
@@ -16,12 +18,14 @@ public class LandoMicroservice  extends MicroService {
     private long duration;
     private Diary diary;
     Broadcast TerminateBroadcast;
+    private CountDownLatch init;
 
-    public LandoMicroservice(long duration) {
+    public LandoMicroservice(long duration,CountDownLatch init) {
 
         super("Lando");
         this.duration = duration;
         diary = Diary.getInstance();
+        this.init = init;
     }
 
     @Override
@@ -55,6 +59,7 @@ public class LandoMicroservice  extends MicroService {
         }
     };
     subscribeEvent(BombDestroyerEvent.class,bombDestroy);
+    init.countDown();
 
 }
 
