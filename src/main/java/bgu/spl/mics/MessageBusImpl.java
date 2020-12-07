@@ -19,12 +19,15 @@ public class MessageBusImpl implements MessageBus {
 	private Map<Class<? extends Broadcast>, ConcurrentLinkedQueue<MicroService>> broadcastHash;
 	private Map<MicroService, ConcurrentLinkedQueue<Message>> microServiceHash;
 	private Map<Event, Future> futureMap;
+	private ConcurrentLinkedQueue<Message> LieaQ;
+
 
 	private MessageBusImpl() { // private constructor for singleton
 		eventHash = new ConcurrentHashMap<Class<? extends Event>, ConcurrentLinkedQueue<MicroService>>() {};
 		broadcastHash = new ConcurrentHashMap<Class<? extends Broadcast>, ConcurrentLinkedQueue<MicroService>>() {};
 		microServiceHash = new ConcurrentHashMap<MicroService, ConcurrentLinkedQueue<Message>>() {};
 		futureMap = new ConcurrentHashMap<Event, Future>(); // TODO: Maybe Event<?>, Future<?> ?
+		LieaQ = new ConcurrentLinkedQueue<Message>();
 	}
 
 	private boolean _is_hashMap_valid(Map hashMap, Object obj) {

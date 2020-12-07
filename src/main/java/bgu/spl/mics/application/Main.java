@@ -7,6 +7,7 @@ import sun.plugin.javascript.navig.LinkArray;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.concurrent.CountDownLatch;
 
 /** This is the Main class of the application. You should parse the input file,
  * create the different components of the application, and run the system.
@@ -55,12 +56,13 @@ public class Main {
 			System.out.println(e.getMessage());
 		}
 		initialize(input);
-
-		HanSoloMicroservice HanSolo = new HanSoloMicroservice();
-		C3POMicroservice C3P0 = new C3POMicroservice();
-		R2D2Microservice R2D2 = new R2D2Microservice(input.getR2D2());
-		LandoMicroservice Lando = new LandoMicroservice(input.getLando());
+		CountDownLatch init = new CountDownLatch(4);
+		HanSoloMicroservice HanSolo = new HanSoloMicroservice(init);
+		C3POMicroservice C3P0 = new C3POMicroservice(init);
+		R2D2Microservice R2D2 = new R2D2Microservice(input.getR2D2(),init);
+		LandoMicroservice Lando = new LandoMicroservice(input.getLando(),init);
 		LeiaMicroservice Leia = new LeiaMicroservice(input.getAttacks());
+
 
 
 		Thread hanSolo = new Thread(HanSolo);
@@ -73,8 +75,13 @@ public class Main {
 		hanSolo.start();
 		c3po.start();
 		r2d2.start();
-		leia.start();
 		lando.start();
+		while (init.getCount()!=0) {   //TODO : not sure if we need loop
+			try {
+				init.await();
+			} catch (InterruptedException e) {}
+		}
+		leia.start();
 		// Finally:
 		try {
 			generateDiaryOutput(outputPath);
