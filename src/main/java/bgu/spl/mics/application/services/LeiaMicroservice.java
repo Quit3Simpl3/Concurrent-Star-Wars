@@ -23,17 +23,13 @@ import bgu.spl.mics.application.passiveObjects.Diary;
 public class LeiaMicroservice extends MicroService {
 	private Attack[] attacks;
 	private Diary diary;
-	private Future<Boolean>[] attacksFutures;
+	private Future<Boolean>[] attackFutures;
 
-
-	
     public LeiaMicroservice(Attack[] attacks) {
         super("Leia");
 		this.attacks = attacks;
-		attacksFutures = new Future[attacks.length];
+		attackFutures = new Future[attacks.length];
 		diary = Diary.getInstance();
-
-
     }
 
     @Override
@@ -44,16 +40,14 @@ public class LeiaMicroservice extends MicroService {
             public void call(TerminateBroadcast c) {
                 terminate();
                 diary.setLeiaTerminate(System.currentTimeMillis());
-
             }
         };
         this.subscribeBroadcast(TerminateBroadcast.class,terminated);
 
-        for (int j=0 ;j<attacksFutures.length ;j++) {
-            AttackEvent attack = new AttackEvent(attacks[j]);
-            attacksFutures[j] = sendEvent(attack);
+        // Send attack events and save their Future objects:
+        for (int i = 0; i < attacksFutures.length ;i++) {
+            Future<Boolean> future = sendEvent(new AttackEvent(attacks[i]));
+            this.attackFutures[i] = future;
         }
-
-
     }
 }
