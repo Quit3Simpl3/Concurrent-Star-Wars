@@ -115,8 +115,10 @@ public class MessageBusImpl implements MessageBus {
 
 	@Override
 	public void register(MicroService m) {
-		ConcurrentLinkedQueue<Message> iRegister = new ConcurrentLinkedQueue();
-		microServiceHash.put(m, iRegister);
+		if (!microServiceHash.containsKey(m)) {
+			ConcurrentLinkedQueue<Message> iRegister = new ConcurrentLinkedQueue();
+			microServiceHash.put(m, iRegister);
+		}
 	}
 
 	@Override
