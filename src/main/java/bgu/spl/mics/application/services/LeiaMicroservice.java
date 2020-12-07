@@ -11,6 +11,7 @@ import bgu.spl.mics.application.messages.TerminateBroadcast;
 import bgu.spl.mics.application.passiveObjects.Attack;
 import bgu.spl.mics.application.messages.AttackEvent;
 import bgu.spl.mics.application.passiveObjects.Diary;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 
 /**
  * LeiaMicroservices Initialized with Attack objects, and sends them as  {@link AttackEvent}s.
@@ -23,7 +24,7 @@ import bgu.spl.mics.application.passiveObjects.Diary;
 public class LeiaMicroservice extends MicroService {
 	private Attack[] attacks;
 	private Diary diary;
-	private Future<Boolean>[] attackFutures;
+	private Future[] attackFutures;
 
     public LeiaMicroservice(Attack[] attacks) {
         super("Leia");
@@ -34,7 +35,6 @@ public class LeiaMicroservice extends MicroService {
 
     @Override
     protected void initialize() {
-
         Callback<TerminateBroadcast> terminated = new Callback<TerminateBroadcast>(){
             @Override
             public void call(TerminateBroadcast c) {
@@ -45,7 +45,7 @@ public class LeiaMicroservice extends MicroService {
         this.subscribeBroadcast(TerminateBroadcast.class,terminated);
 
         // Send attack events and save their Future objects:
-        for (int i = 0; i < attacksFutures.length ;i++) {
+        for (int i = 0; i < attackFutures.length ;i++) {
             Future<Boolean> future = sendEvent(new AttackEvent(attacks[i]));
             this.attackFutures[i] = future;
         }
