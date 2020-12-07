@@ -31,7 +31,20 @@ public class Ewoks {
     }
 
     private Ewok getEwok(int serialNumber) throws NoSuchElementException {
-        return this.ewoks[serialNumber-1];
+        Ewok ewok = this.ewoks[serialNumber-1];
+        if (!(ewok instanceof Ewok)) {
+            throw new NoSuchElementException("Ewok " + serialNumber + " does not exist.");
+        }
+        else if (ewok.getSerialNumber() == serialNumber) {
+            return ewok;
+        }
+        else {
+            for (Ewok e : this.ewoks) {
+                if (ewok.getSerialNumber() == serialNumber)
+                    return ewok;
+            }
+        }
+        throw new NoSuchElementException("Ewok " + serialNumber + " does not exist.");
     }
 
     /**
