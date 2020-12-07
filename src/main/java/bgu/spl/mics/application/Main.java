@@ -1,7 +1,9 @@
 package bgu.spl.mics.application;
 
 import bgu.spl.mics.application.passiveObjects.*;
+import bgu.spl.mics.application.services.*;
 import com.google.gson.Gson;
+import sun.plugin.javascript.navig.LinkArray;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -19,9 +21,10 @@ public class Main {
 		Diary diary = Diary.getInstance();
 		// Create the attacks:
 		Attack[] attacks = input.getAttacks();
+
+
 		// TODO: Set attack sleep() times (millis):
 
-		// TODO: Create microservices
 
 	}
 
@@ -40,6 +43,9 @@ public class Main {
 		String inputPath = args[0];
 		String outputPath = args[1];
 		Input input = null;
+
+
+
 		try {
 			input = parseJson(inputPath);
 			if (input == null) throw new IOException();
@@ -49,8 +55,26 @@ public class Main {
 			System.out.println(e.getMessage());
 		}
 		initialize(input);
-		// TODO: Start the microservices:
 
+		HanSoloMicroservice HanSolo = new HanSoloMicroservice();
+		C3POMicroservice C3P0 = new C3POMicroservice();
+		R2D2Microservice R2D2 = new R2D2Microservice(input.getR2D2());
+		LandoMicroservice Lando = new LandoMicroservice(input.getLando());
+		LeiaMicroservice Leia = new LeiaMicroservice(input.getAttacks());
+
+
+		Thread hanSolo = new Thread(HanSolo);
+		Thread leia = new Thread(Leia);
+		Thread r2d2 = new Thread(R2D2);
+		Thread lando = new Thread(Lando);
+		Thread c3po = new Thread(C3P0);
+
+		// run:
+		hanSolo.start();
+		c3po.start();
+		r2d2.start();
+		leia.start();
+		lando.start();
 		// Finally:
 		try {
 			generateDiaryOutput(outputPath);
