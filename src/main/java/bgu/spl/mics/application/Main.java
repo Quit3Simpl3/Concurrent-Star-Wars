@@ -21,7 +21,7 @@ public class Main {
 		Attack[] attacks = input.getAttacks();
 		// TODO: Set attack sleep() times (millis):
 
-		// TOOD: Create microservices
+		// TODO: Create microservices
 
 	}
 

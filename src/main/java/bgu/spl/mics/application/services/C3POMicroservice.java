@@ -56,7 +56,7 @@ public class C3POMicroservice extends MicroService {
             @Override
             public void call(TerminateBroadcast c) {
                 terminate();
-                diary.setC3POTerminate(System.currentTimeMillis());
+                diary.updateC3PO(0,0,System.currentTimeMillis());
 
             }
         };
