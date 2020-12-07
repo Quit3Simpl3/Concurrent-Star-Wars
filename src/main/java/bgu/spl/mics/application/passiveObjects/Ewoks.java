@@ -73,7 +73,7 @@ public class Ewoks {
      */
     public void releaseEwoks(List<Integer> serialNumbers) {
         for (Integer serial : serialNumbers) {
-            this.ewoks[serial-1].release();
+            this.getEwok(serial).release();
             notifyAll(); // Notify all the microservices waiting for ewoks to be released.
         }
     }
