@@ -192,7 +192,13 @@ public abstract class MicroService implements Runnable {
             Message msg = null;
             try {
                 callback_called = false;
-                msg = this.messageBus.awaitMessage(this);
+                try {
+                    msg = this.messageBus.awaitMessage(this);
+                }
+                catch (IllegalStateException e) {
+                    this.messageBus.register(this);
+                    msg = this.messageBus.awaitMessage(this);
+                }
                 if (!Objects.isNull(msg)) // Make sure msg is not null
                     callback_called = this.executeCallback(msg);
             }

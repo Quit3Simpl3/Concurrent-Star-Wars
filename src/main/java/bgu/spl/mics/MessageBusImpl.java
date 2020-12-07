@@ -126,7 +126,7 @@ public class MessageBusImpl implements MessageBus {
 	}
 
 	@Override
-	public Message awaitMessage(MicroService m) throws InterruptedException {
+	public Message awaitMessage(MicroService m) throws InterruptedException, IllegalStateException {
 		if (this.microServiceHash == null || !this.microServiceHash.containsKey(m))
 			throw new IllegalStateException("The provided MicroService is not registered.");
 
