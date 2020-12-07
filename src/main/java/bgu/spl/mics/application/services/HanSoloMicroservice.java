@@ -48,13 +48,11 @@ public class HanSoloMicroservice extends MicroService {
                 ewoks.getEwoks(attack.GetSerials());
                     try {
                         Thread.sleep(attack.GetDuration());
-                        diary.setHanSoloFinish(System.currentTimeMillis());
-                        diary.addTotalAttacks(1);
+                    } catch (InterruptedException e) { /*TODO: see if we need to handle exe during an attack*/}
+                    finally {
+                        diary.updateHanSolo(1,System.currentTimeMillis(),0);
                         complete(c, true);
                         ewoks.finsh(attack.GetSerials());
-                    } catch (InterruptedException e) {
-                        ewoks.finsh(attack.GetSerials());
-                        call(c);
                     }
                 }
         };
@@ -64,8 +62,7 @@ public class HanSoloMicroservice extends MicroService {
             @Override
             public void call(TerminateBroadcast c) {
                 terminate();
-                diary.setHanSoloTerminate(System.currentTimeMillis());
-
+                diary.updateHanSolo(0,0,System.currentTimeMillis());
             }
         };
         this.subscribeBroadcast(TerminateBroadcast.class,terminated);
