@@ -18,6 +18,6 @@ public class AttackEvent implements Event<Boolean> {
 	//public List<Integer> getEwokForAttack() {
   //      return ewoksForAttack;
  //   }
-    public Attack GetAttack(){ return attack;}
+    public Attack getAttack(){ return attack;}
    // public void complete
 }

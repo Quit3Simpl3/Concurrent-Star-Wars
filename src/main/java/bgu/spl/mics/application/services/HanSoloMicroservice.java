@@ -21,42 +21,31 @@ public class HanSoloMicroservice extends MicroService {
     private Diary diary;
     private Ewoks ewoks;
 
-
-    /*
-     * Local field: timestamp, Leia sends DeactivationEvent and RecordDiaryBroadcast, then
-     * C3PO and HanSolo both write to Diary.
-     * myAttacksCounter
-     * */
-
     public HanSoloMicroservice() {
         super("Han");
         diary = Diary.getInstance();
         ewoks = Ewoks.getInstance();
     }
 
-    /*
-     * taskAttack() {...attack}
-     * taskDiary() {write last timestamp and attacks}
-     * */
-
     @Override
     protected void initialize() {
         Callback<AttackEvent> myAttack = new Callback<AttackEvent>() {
             @Override
             public void call(AttackEvent c) {
-                Attack attack = c.GetAttack();
-                ewoks.getEwoks(attack.GetSerials());
-                    try {
-                        Thread.sleep(attack.GetDuration());
-                    } catch (InterruptedException e) { /*TODO: see if we need to handle exe during an attack*/}
-                    finally {
-                        diary.updateHanSolo(1,System.currentTimeMillis(),0);
-                        complete(c, true);
-                        ewoks.finsh(attack.GetSerials());
-                    }
+                Attack attack = c.getAttack();
+                ewoks.acquireEwoks(attack.GetSerials());
+                try {
+                    Thread.sleep(attack.GetDuration());
                 }
+                catch (InterruptedException e) { /*TODO: see if we need to handle exe during an attack*/}
+                finally {
+                    diary.updateHanSolo(1,System.currentTimeMillis(),0);
+                    complete(c, true);
+                    ewoks.releaseEwoks(attack.GetSerials());
+                }
+            }
         };
-        subscribeEvent(AttackEvent.class,myAttack);
+        subscribeEvent(AttackEvent.class, myAttack);
 
         Callback<TerminateBroadcast> terminated = new Callback<TerminateBroadcast>(){
             @Override

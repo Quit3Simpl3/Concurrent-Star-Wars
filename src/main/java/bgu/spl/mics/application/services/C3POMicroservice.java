@@ -36,22 +36,20 @@ public class C3POMicroservice extends MicroService {
         Callback<AttackEvent> myAttack = new Callback<AttackEvent>() {
             @Override
             public void call(AttackEvent c) {
-                Attack attack = c.GetAttack();
-                ewoks.getEwoks(attack.GetSerials());
+                Attack attack = c.getAttack();
+                ewoks.acquireEwoks(attack.GetSerials());
                 try {
                     Thread.sleep(attack.GetDuration());
-                    diary.setC3POFinish(System.currentTimeMillis());
-                    diary.addTotalAttacks(1);
+                }
+                catch (InterruptedException e) { /*TODO: see if we need to handle exe during an attack*/}
+                finally {
+                    diary.updateC3PO(1,System.currentTimeMillis(),0);
                     complete(c, true);
-                    ewoks.finsh(attack.GetSerials());
-                } catch (InterruptedException e) {
-                    ewoks.finsh(attack.GetSerials());
-                    call(c);
+                    ewoks.releaseEwoks(attack.GetSerials());
                 }
             }
-
         };
-        subscribeEvent(AttackEvent.class,myAttack);
+        subscribeEvent(AttackEvent.class, myAttack);
 
 
         Callback<TerminateBroadcast> terminated = new Callback<TerminateBroadcast>(){
