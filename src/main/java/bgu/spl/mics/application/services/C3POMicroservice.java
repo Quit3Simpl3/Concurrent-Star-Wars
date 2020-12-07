@@ -57,7 +57,6 @@ public class C3POMicroservice extends MicroService {
             public void call(TerminateBroadcast c) {
                 terminate();
                 diary.updateC3PO(0,0,System.currentTimeMillis());
-
             }
         };
         this.subscribeBroadcast(TerminateBroadcast.class,terminated);
