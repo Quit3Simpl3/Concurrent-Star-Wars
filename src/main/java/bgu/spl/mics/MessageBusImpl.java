@@ -123,8 +123,9 @@ public class MessageBusImpl implements MessageBus {
 
 	@Override
 	public void unregister(MicroService m) {
-		microServiceHash.remove(m);  //TODO : need to remove from broadcast and event and what to do with missions i didnt finish
-		
+		microServiceHash.remove(m);
+		// TODO: remove m from eventHash and broadcastHasg
+
 	}
 
 	@Override
