@@ -2,6 +2,7 @@ package bgu.spl.mics.application.services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import bgu.spl.mics.Callback;
 import bgu.spl.mics.Event;
@@ -46,7 +47,10 @@ public class LeiaMicroservice extends MicroService {
 
         // Send attack events and save their Future objects:
         for (int i = 0; i < attackFutures.length ;i++) {
-            Future<Boolean> future = sendEvent(new AttackEvent(attacks[i]));
+            Future<Boolean> future = null;
+            while (Objects.isNull(future)) { // No one received the message
+                future = sendEvent(new AttackEvent(attacks[i])); // Send the message again until someone receives it
+            }
             this.attackFutures[i] = future;
         }
     }
