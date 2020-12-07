@@ -1,6 +1,9 @@
 package bgu.spl.mics.application.passiveObjects;
 
 
+import java.util.List;
+import java.util.Objects;
+
 /**
  * Passive object representing the resource manager.
  * <p>
@@ -11,4 +14,21 @@ package bgu.spl.mics.application.passiveObjects;
  */
 public class Ewoks {
 
+    private static Ewoks instance = null;
+
+    private Ewoks() {
+
+    }
+
+    public static  synchronized Ewoks getInstance() {
+        if (Objects.isNull(instance))
+            instance = new Ewoks();
+
+        return instance;
+    }
+
+
+
+    public synchronized void finsh (List<Integer> serialNumbers) {}
+    public synchronized boolean getEwoks (List<Integer> serialNumbers) {return true;}
 }

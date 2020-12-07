@@ -1,5 +1,8 @@
 package bgu.spl.mics.application.passiveObjects;
 
+import bgu.spl.mics.MessageBusImpl;
+
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -10,6 +13,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class Diary {
     // Private fields:
+    private static Diary instance = null;
     private AtomicInteger totalAttacks; // Sum of HanSolo and C3PO attacks.
     private long HanSoloFinish;
     private long C3POFinish;
@@ -20,7 +24,7 @@ public class Diary {
     private long R2D2Terminate;
     private long LandoTerminate;
 
-    public Diary() { // Constructor
+    private Diary() { // Constructor
         this.totalAttacks = new AtomicInteger(0);
         this.HanSoloFinish = 0;
         this.C3POFinish = 0;
@@ -31,6 +35,13 @@ public class Diary {
         this.R2D2Terminate = 0;
         this.LandoTerminate = 0;
     }
+
+        public static  synchronized Diary getInstance() {
+            if (Objects.isNull(instance))
+                instance = new Diary();
+
+            return instance;
+        }
 
     /*
     * Setters:
