@@ -1,6 +1,9 @@
 package bgu.spl.mics.application.services;
 
+import bgu.spl.mics.Callback;
 import bgu.spl.mics.MicroService;
+import bgu.spl.mics.application.messages.*;
+import bgu.spl.mics.application.passiveObjects.*;
 
 /**
  * R2D2Microservices is in charge of the handling {@link DeactivationEvent}.
@@ -11,17 +14,41 @@ import bgu.spl.mics.MicroService;
  * You MAY change constructor signatures and even add new public constructors.
  */
 public class R2D2Microservice extends MicroService {
+    private long duration;
+    private Diary diary;
 
     public R2D2Microservice(long duration) {
         super("R2D2");
+        this.duration = duration;
+        diary = Diary.getInstance();
     }
 
     @Override
     protected void initialize() {
-        // 1. register to MsgBus
-        // 2. subscribe to DeactivationEvent
-        // 3. awaitMessage
+        Callback<TerminateBroadcast> terminated = new Callback<TerminateBroadcast>(){
+            @Override
+            public void call(TerminateBroadcast c) {
+                diary.setR2D2Terminate(System.currentTimeMillis());
+                terminate();
+
+            }
+        };
+        this.subscribeBroadcast(TerminateBroadcast.class,terminated);
+
+    }
+    Callback<DeactivationEvent> terminated = new Callback<DeactivationEvent>(){
+
+        @Override
+        public void call(DeactivationEvent c) {
+            try{
+
+               Thread.sleep(duration);
+               diary.setR2D2Deactivate(System.currentTimeMillis());
+               complete();
+            }catch (InterruptedException e){
+
+            }
+
     }
 
-    // TODO: add private method deactivate()
 }

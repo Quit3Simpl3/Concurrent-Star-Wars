@@ -10,9 +10,9 @@ import bgu.spl.mics.application.passiveObjects.Diary;
 import bgu.spl.mics.application.passiveObjects.Ewoks;
 
 /**
- * HanSoloMicroservices is in charge of the handling {@link AttackEvents}.
+ * HanSoloMicroservices is in charge of the handling {@link AttackEvent}s.
  * This class may not hold references for objects which it is not responsible for:
- * {@link AttackEvents}.
+ * {@link AttackEvent}s.
  *
  * You can add private fields and public methods to this class.
  * You MAY change constructor signatures and even add new public constructors.
@@ -45,21 +45,18 @@ public class HanSoloMicroservice extends MicroService {
             @Override
             public void call(AttackEvent c) {
                 Attack attack = c.GetAttack();
-                if (!ewoks.getEwoks(attack.GetSerials()))   //TODO: need to write how to use ewoks and then go inside
-                    complete(c, false);
-                else {
+                ewoks.getEwoks(attack.GetSerials());
                     try {
                         Thread.sleep(attack.GetDuration());
                         diary.setHanSoloFinish(System.currentTimeMillis());
                         diary.addTotalAttacks(1);
                         complete(c, true);
+                        ewoks.finsh(attack.GetSerials());
                     } catch (InterruptedException e) {
-                        complete(c, false);
-                        ewoks.finsh(attack.GetSerials()); //TODO :: need to write finish
+                        ewoks.finsh(attack.GetSerials());
+                        call(c);
                     }
                 }
-            }
-
         };
         subscribeEvent(AttackEvent.class,myAttack);
 

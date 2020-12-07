@@ -15,9 +15,9 @@ public class AttackEvent implements Event<Boolean> {
         this.attack = attack;
     }
 
-	public List<Integer> getEwokForAttack() {
-        return ewoksForAttack;
-    }
+	//public List<Integer> getEwokForAttack() {
+  //      return ewoksForAttack;
+ //   }
     public Attack GetAttack(){ return attack;}
    // public void complete
 }
