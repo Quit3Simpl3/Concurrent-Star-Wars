@@ -3,6 +3,7 @@ package bgu.spl.mics;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -126,35 +127,46 @@ public class MessageBusImpl implements MessageBus {
 		}
 	}
 
-	@Override
-	public void unregister(MicroService m) {
-		microServiceHash.remove(m);
-		// TODO: remove m from eventHash and broadcastHasg
-
+	private void unsubscribe (Map map, MicroService m) {
+		if (map.containsValue(m)) {
+			for (Object b : map.keySet()) {
+				((Set) b).remove(m);
+			}
+		}
 	}
 
 	@Override
-	public synchronized Message awaitMessage(MicroService m) throws InterruptedException, IllegalStateException {
-
-		if (this.microServiceHash == null || !this.microServiceHash.containsKey(m)) {
-
-			throw new IllegalStateException(" The provided MicroService is not registered.");
-		}
-		while (this.microServiceHash.get(m).isEmpty()) {
-			try {
-				System.out.println("microservice"+m.getName()+" wait");//TODO :remove this
-
-				wait();
+	public void unregister (MicroService m){
+		microServiceHash.remove(m);
+		unsubscribe(eventHash,m);
+		unsubscribe(broadcastHash,m);
+				// TODO: remove m from eventHash and broadcastHasg
 
 			}
-			catch (InterruptedException e) {}
-		}
 
-		try {
-			return this.microServiceHash.get(m).remove();
-		}
-		catch (NoSuchElementException e) {
-			return awaitMessage(m);
-		}
+	@Override
+	public synchronized Message awaitMessage (MicroService m) throws InterruptedException, IllegalStateException {
+				if (this.microServiceHash == null || !this.microServiceHash.containsKey(m)) {
+
+					throw new IllegalStateException(" The provided MicroService is not registered.");
+				}
+				while (this.microServiceHash.get(m).isEmpty()) {
+					try {
+						System.out.println("microservice" + m.getName() + " wait");//TODO :remove this
+
+						wait();
+
+					} catch (InterruptedException e) {
+					}
+				}
+
+				try {
+					return this.microServiceHash.get(m).remove();
+				} catch (NoSuchElementException e) {
+					return awaitMessage(m);
+				}
 	}
 }
+
+
+
