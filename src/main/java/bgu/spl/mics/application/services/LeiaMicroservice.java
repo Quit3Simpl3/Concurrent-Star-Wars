@@ -37,6 +37,7 @@ public class LeiaMicroservice extends MicroService {
     }
 
     private boolean awaitAttacks() {
+        Boolean result = null;
         Queue<Future<Boolean>> futuresQueue = new LinkedList<>();
         // Enqueue attack future objects:
         for (Future<Boolean> future : this.attackFutures) {
@@ -44,7 +45,9 @@ public class LeiaMicroservice extends MicroService {
         }
         while (!futuresQueue.isEmpty()) {
             Future<Boolean> future = futuresQueue.remove();
-            Boolean result = future.get(1, TimeUnit.MILLISECONDS); // TODO: How many millis are enough?
+            result = null;
+            if (future.isDone())
+                  result = future.get(10, TimeUnit.MILLISECONDS); // TODO: How many millis are enough?
             if (Objects.isNull(result)) // If attack isn't finished, put the future back in the queue to be checked again.
                 futuresQueue.add(future);
         }
@@ -57,10 +60,10 @@ public class LeiaMicroservice extends MicroService {
         return future.get(); // Wait until R2D2 finishes.
     }
 
-    private void sendBombDestroyerEvent() {
+    private boolean sendBombDestroyerEvent() {
         System.out.println("liea sent bomb");  //TODO: delete this after finish debug
         Future<Boolean> future = sendEvent(new BombDestroyerEvent());
-        future.get(); // Wait until Lando finishes.
+        return future.get(); // Wait until Lando finishes.
     }
 
     @Override
@@ -79,7 +82,7 @@ public class LeiaMicroservice extends MicroService {
             Future<Boolean> future = null;
             while (Objects.isNull(future)) { // No one received the message
                 future = sendEvent(new AttackEvent(attacks[i])); // Send the message again until someone receives it
-                notifyAll();
+
             }
             this.attackFutures[i] = future;
             System.out.println("liea sent attack");  //TODO: delete this after finish debug
@@ -87,7 +90,16 @@ public class LeiaMicroservice extends MicroService {
 
         // Await the attacks' results:
         if (awaitAttacks())
-            if (sendDeactivationEvent())
-                sendBombDestroyerEvent();
+            if (sendDeactivationEvent()) {
+                System.out.println(" finish with deactivat ");
+                if(sendBombDestroyerEvent()){
+                 System.out.println(" finish with bomb ");
+                 sendBroadcast(new TerminateBroadcast("Leia"));
+
+                }
+
+
+
+            }
     }
 }

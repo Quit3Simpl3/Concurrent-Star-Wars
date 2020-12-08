@@ -46,7 +46,7 @@ public class LandoMicroservice  extends MicroService {
                 try {
                     Thread.sleep(duration);
                     complete(c, true);
-                    sendBroadcast(TerminateBroadcast);
+                 //   sendBroadcast(TerminateBroadcast);
                 } catch (InterruptedException e) {
                 }
             }

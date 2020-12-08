@@ -47,8 +47,11 @@ public class C3POMicroservice extends MicroService {
                 catch (InterruptedException e) { /*TODO: see if we need to handle exe during an attack*/}
                 finally {
                     diary.updateC3PO(1,System.currentTimeMillis(),0);
+                    System.out.println("C3PO send complete");
                     complete(c, true);
+
                     ewoks.releaseEwoks(attack.GetSerials());
+                    System.out.println("C3PO resease his ewoks");
                 }
             }
         };

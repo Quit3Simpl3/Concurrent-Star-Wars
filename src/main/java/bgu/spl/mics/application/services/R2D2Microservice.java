@@ -51,6 +51,7 @@ public class R2D2Microservice extends MicroService {
                 }
             }
         };
+        this.subscribeEvent(DeactivationEvent.class, Deactivat);
         init.countDown();
     }
 

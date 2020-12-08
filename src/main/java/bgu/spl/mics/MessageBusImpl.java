@@ -19,7 +19,7 @@ public class MessageBusImpl implements MessageBus {
 	private Map<Class<? extends Broadcast>, ConcurrentLinkedQueue<MicroService>> broadcastHash;
 	private Map<MicroService, ConcurrentLinkedQueue<Message>> microServiceHash;
 	private Map<Event, Future> futureMap;
-	private ConcurrentLinkedQueue<Message> LieaQ;
+
 
 
 	private MessageBusImpl() { // private constructor for singleton
@@ -38,7 +38,8 @@ public class MessageBusImpl implements MessageBus {
 		);
 	}
 
-	private boolean _is_hashMap_valid(Map hashMap, Object obj, ConcurrentLinkedQueue queue) {
+	private boolean _is_hashMap_invalid(Map hashMap, Object obj, ConcurrentLinkedQueue queue) {
+
 		return (
 				hashMap == null
 				|| hashMap.isEmpty()
@@ -87,9 +88,10 @@ public class MessageBusImpl implements MessageBus {
 
 	@Override
 	public synchronized void sendBroadcast(Broadcast b) {
-		if (!_is_hashMap_valid(broadcastHash, b, broadcastHash.get(b.getClass())))
+		if (_is_hashMap_invalid(broadcastHash, b, broadcastHash.get(b.getClass()))) {
 			// DO NOTHING (msg goes to trash)
 			return;
+		}
 
 		for (MicroService microService : broadcastHash.get(b.getClass())) {
 			microServiceHash.get(microService).add(b);
@@ -100,11 +102,11 @@ public class MessageBusImpl implements MessageBus {
 
 	@Override
 	public synchronized <T> Future<T> sendEvent(Event<T> e) {
-		if (!_is_hashMap_valid(eventHash, e, eventHash.get(e.getClass())))
+		if (_is_hashMap_invalid(eventHash, e, eventHash.get(e.getClass()))) {
 			// throw new IllegalArgumentException("No valid argument provided.");
 			// DO NOTHING (msg goes to trash)
 			return null;
-
+		}
 		microServiceHash.get(eventHash.get(e.getClass()).peek()).add(e);
 		eventHash.get(e.getClass()).add(eventHash.get(e.getClass()).poll());
 		// Handle future object:
@@ -132,18 +134,18 @@ public class MessageBusImpl implements MessageBus {
 	}
 
 	@Override
-	public Message awaitMessage(MicroService m) throws InterruptedException, IllegalStateException {
+	public synchronized Message awaitMessage(MicroService m) throws InterruptedException, IllegalStateException {
 
 		if (this.microServiceHash == null || !this.microServiceHash.containsKey(m)) {
-			System.out.println("microservice" + m.getName() + " have exe when try to wait");//TODO :remove this
+
 			throw new IllegalStateException(" The provided MicroService is not registered.");
 		}
 		while (this.microServiceHash.get(m).isEmpty()) {
 			try {
-				System.out.println("microservice"+m.getName()+" try to wait");//TODO :remove this
+				System.out.println("microservice"+m.getName()+" wait");//TODO :remove this
 
-				this.wait();
-				System.out.println("microservice"+m.getName()+"is wait");//TODO :remove this
+				wait();
+
 			}
 			catch (InterruptedException e) {}
 		}

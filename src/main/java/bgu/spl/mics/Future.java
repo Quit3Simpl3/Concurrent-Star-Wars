@@ -32,7 +32,7 @@ public class Future<T> {
      * @return return the result of type T if it is available, if not wait until it is available.
      * 	       
      */
-	public T get() {
+	public synchronized T get() {
 		/*Runnable checkIsDone = () -> {
 			while (!this.isDone()) {
 				try {
@@ -64,7 +64,7 @@ public class Future<T> {
 	/**
      * Resolves the result of this Future object.
      */
-	public void resolve (T result) {
+	public synchronized void resolve (T result) {
 		if(result == null)
 			throw new IllegalArgumentException("null is forbidden");
 
@@ -96,7 +96,7 @@ public class Future<T> {
 		// TODO: calculate time delta USING TimeUnit
 		boolean time_passed = false;
 		long start = System.currentTimeMillis();
-		while (!time_passed && !this.isDone()) {
+		while (!time_passed) {
 			if (this.isDone()) return this._get_result();
 			time_passed = (System.currentTimeMillis() - start) > timeout;
 			try {

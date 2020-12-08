@@ -20,9 +20,9 @@ public class Main {
 		Ewoks ewoks = Ewoks.getInstance();
 		ewoks.createEwoks(input.getEwoks());
 		// Create the diary:
-		Diary diary = Diary.getInstance();
+		Diary.getInstance();
 		// Create the attacks:
-		Attack[] attacks = input.getAttacks();
+
 
 
 		// TODO: Set attack sleep() times (millis):
@@ -37,13 +37,24 @@ public class Main {
 	private static void generateDiaryOutput(String path) throws IOException {
 		Gson gson = new Gson();
 		// TODO: Verify this output!
+		/*
+			There are 2 attacks.
+			HanSolo and C3PO finish their tasks ~1000 milliseconds one after the other.
+			All threads terminate ~4000 milliseconds later.
+		 */
 		Diary diary = Diary.getInstance();
+
+		long timediff = Math.abs(diary.getC3POFinish()-diary.getHanSoloFinish());
+		String attacks = "There are "+diary.getTotalAttacks()+" attacks.";
+		String attackers ="HanSolo and C3PO finish their tasks ~"+timediff+" milliseconds one after the other." ;
+		String terminations;
+
 		gson.toJson(diary, new FileWriter(path));
 	}
 
 	public static void main(String[] args) {
 		String inputPath = args[0];
-		//String outputPath = args[1];
+		String outputPath = args[1];
 		Input input = null;
 
 
@@ -71,6 +82,25 @@ public class Main {
 		Thread r2d2 = new Thread(R2D2);
 		Thread lando = new Thread(Lando);
 		Thread c3po = new Thread(C3P0);
+		Thread diaryThread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					hanSolo.join();
+					leia.join();
+					r2d2.join();
+					c3po.join();
+					lando.join();
+					Diary diary = Diary.getInstance();
+					System.out.println("write the output");
+					generateDiaryOutput(outputPath);
+				}
+				catch (IOException e) {
+					System.out.println("Json writing error. Check the file.");
+					System.out.println(e.getMessage());
+				}catch (InterruptedException ex) {}
+			}
+		});
 
 		// run:
 		hanSolo.start();
@@ -86,12 +116,8 @@ public class Main {
 		leia.start();
 		System.out.println("liea is runing");  //TODO: delete this after finish debug
 		// Finally:
-	//	try {
-	//		generateDiaryOutput(outputPath);
-	//	}
-	//	catch (IOException e) {
-	//		System.out.println("Json writing error. Check the file.");
-	//		System.out.println(e.getMessage());
-	//	}
+		diaryThread.start();
+
+
 	}
 }

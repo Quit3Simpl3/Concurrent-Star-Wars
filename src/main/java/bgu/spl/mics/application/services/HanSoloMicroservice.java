@@ -46,8 +46,10 @@ public class HanSoloMicroservice extends MicroService {
                 catch (InterruptedException e) { /*TODO: see if we need to handle exe during an attack*/}
                 finally {
                     diary.updateHanSolo(1,System.currentTimeMillis(),0);
+                    System.out.println("HANSOLO send complete");
                     complete(c, true);
                     ewoks.releaseEwoks(attack.GetSerials());
+                    System.out.println("hansolo resease his ewoks");
                 }
             }
         };

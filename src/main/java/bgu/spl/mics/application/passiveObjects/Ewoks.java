@@ -87,7 +87,7 @@ public class Ewoks {
      * Releases the Ewoks which were acquired for an attack.
      * @param serialNumbers - Ewoks' serial numbers.
      */
-    public void releaseEwoks(List<Integer> serialNumbers) {
+    public synchronized void releaseEwoks(List<Integer> serialNumbers) {
         for (Integer serial : serialNumbers) {
             this.getEwok(serial).release();
             notifyAll(); // Notify all the microservices waiting for ewoks to be released.
