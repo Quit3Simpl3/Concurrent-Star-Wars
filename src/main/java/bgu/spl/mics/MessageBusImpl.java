@@ -27,7 +27,7 @@ public class MessageBusImpl implements MessageBus {
 		broadcastHash = new ConcurrentHashMap<Class<? extends Broadcast>, ConcurrentLinkedQueue<MicroService>>() {};
 		microServiceHash = new ConcurrentHashMap<MicroService, ConcurrentLinkedQueue<Message>>() {};
 		futureMap = new ConcurrentHashMap<Event, Future>(); // TODO: Maybe Event<?>, Future<?> ?
-		LieaQ = new ConcurrentLinkedQueue<Message>();
+
 	}
 
 	private boolean _is_hashMap_valid(Map hashMap, Object obj) {
@@ -133,12 +133,17 @@ public class MessageBusImpl implements MessageBus {
 
 	@Override
 	public Message awaitMessage(MicroService m) throws InterruptedException, IllegalStateException {
-		if (this.microServiceHash == null || !this.microServiceHash.containsKey(m))
-			throw new IllegalStateException("The provided MicroService is not registered.");
 
+		if (this.microServiceHash == null || !this.microServiceHash.containsKey(m)) {
+			System.out.println("microservice" + m.getName() + " have exe when try to wait");//TODO :remove this
+			throw new IllegalStateException(" The provided MicroService is not registered.");
+		}
 		while (this.microServiceHash.get(m).isEmpty()) {
 			try {
+				System.out.println("microservice"+m.getName()+" try to wait");//TODO :remove this
+
 				this.wait();
+				System.out.println("microservice"+m.getName()+"is wait");//TODO :remove this
 			}
 			catch (InterruptedException e) {}
 		}

@@ -3,7 +3,8 @@ package bgu.spl.mics.application;
 import bgu.spl.mics.application.passiveObjects.*;
 import bgu.spl.mics.application.services.*;
 import com.google.gson.Gson;
-import sun.plugin.javascript.navig.LinkArray;
+
+
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -42,7 +43,7 @@ public class Main {
 
 	public static void main(String[] args) {
 		String inputPath = args[0];
-		String outputPath = args[1];
+		//String outputPath = args[1];
 		Input input = null;
 
 
@@ -76,19 +77,21 @@ public class Main {
 		c3po.start();
 		r2d2.start();
 		lando.start();
-		while (init.getCount()!=0) {   //TODO : not sure if we need loop
+		System.out.println("all the 4 threads runing");  //TODO: delete this after finish debug
+	//	while (init.getCount()!=0) {   //TODO : not sure if we need loop
 			try {
 				init.await();
 			} catch (InterruptedException e) {}
-		}
+	//	}
 		leia.start();
+		System.out.println("liea is runing");  //TODO: delete this after finish debug
 		// Finally:
-		try {
-			generateDiaryOutput(outputPath);
-		}
-		catch (IOException e) {
-			System.out.println("Json writing error. Check the file.");
-			System.out.println(e.getMessage());
-		}
+	//	try {
+	//		generateDiaryOutput(outputPath);
+	//	}
+	//	catch (IOException e) {
+	//		System.out.println("Json writing error. Check the file.");
+	//		System.out.println(e.getMessage());
+	//	}
 	}
 }

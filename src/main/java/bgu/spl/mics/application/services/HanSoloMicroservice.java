@@ -30,6 +30,7 @@ public class HanSoloMicroservice extends MicroService {
         diary = Diary.getInstance();
         ewoks = Ewoks.getInstance();
         this.init = init;
+        System.out.println("HAN been created");  //TODO: delete this after finish debug
     }
 
     @Override

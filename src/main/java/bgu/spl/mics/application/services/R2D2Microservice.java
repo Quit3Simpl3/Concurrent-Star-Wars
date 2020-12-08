@@ -20,7 +20,7 @@ public class R2D2Microservice extends MicroService {
     private Diary diary;
     private CountDownLatch init;
 
-    public R2D2Microservice(long duration,CountDownLatch init) {
+    public R2D2Microservice(long duration, CountDownLatch init) {
         super("R2D2");
         this.duration = duration;
         diary = Diary.getInstance();
@@ -40,19 +40,18 @@ public class R2D2Microservice extends MicroService {
         this.subscribeBroadcast(TerminateBroadcast.class, terminated);
 
 
+        Callback<DeactivationEvent> Deactivat = new Callback<DeactivationEvent>() {
+            @Override
+            public void call(DeactivationEvent c) {
+                try {
+                    Thread.sleep(duration);
+                    diary.setR2D2Deactivate(System.currentTimeMillis());
+                    complete(c, true);
+                } catch (InterruptedException e) {
+                }
+            }
+        };
+        init.countDown();
     }
 
-    Callback<DeactivationEvent> terminated = new Callback<DeactivationEvent>() {
-        @Override
-        public void call(DeactivationEvent c) {
-            try {
-                Thread.sleep(duration);
-                diary.setR2D2Deactivate(System.currentTimeMillis());
-                complete(c, true);
-            }
-            catch (InterruptedException e) {}
-        }
-    };
-  init.countDown();
 }
-

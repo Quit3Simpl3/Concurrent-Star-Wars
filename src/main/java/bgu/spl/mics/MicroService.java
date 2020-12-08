@@ -36,6 +36,7 @@ public abstract class MicroService implements Runnable {
     	this.name = name;
     	this.messageBus = MessageBusImpl.getInstance();
     	this.terminate = false;
+        subscriptions = new HashMap<Class<? extends Message>, Callback<? extends Message>>();
     }
 
     /**
@@ -200,8 +201,8 @@ public abstract class MicroService implements Runnable {
                     try {
                         msg = this.messageBus.awaitMessage(this);
                     }
-                    catch (IllegalStateException e) { // Really?! You screwed up AGAIN?!
-                        System.out.println(e.getMessage());
+                    catch (IllegalStateException ex) { // Really?! You screwed up AGAIN?!
+                        System.out.println(ex.getMessage());
                     }
                 }
                 if (!Objects.isNull(msg)) // Make sure msg is not null

@@ -21,7 +21,7 @@ public class LandoMicroservice  extends MicroService {
     private CountDownLatch init;
 
 
-    public LandoMicroservice(long duration,CountDownLatch init) {
+    public LandoMicroservice(long duration, CountDownLatch init) {
 
         super("Lando");
         this.duration = duration;
@@ -38,24 +38,24 @@ public class LandoMicroservice  extends MicroService {
                 terminate();
             }
         };
-        this.subscribeBroadcast(TerminateBroadcast.class,terminated);
+        this.subscribeBroadcast(TerminateBroadcast.class, terminated);
 
         Callback<BombDestroyerEvent> bombDestroy = new Callback<BombDestroyerEvent>() {
             @Override
             public void call(BombDestroyerEvent c) {
                 try {
                     Thread.sleep(duration);
-                    complete(c,true);
+                    complete(c, true);
                     sendBroadcast(TerminateBroadcast);
+                } catch (InterruptedException e) {
                 }
-                catch (InterruptedException e) {}
             }
 
-        }
-    };
-    subscribeEvent(BombDestroyerEvent.class,bombDestroy);
-    init.countDown();
+        };
 
+        subscribeEvent(BombDestroyerEvent.class, bombDestroy);
+        init.countDown();
+
+    }
 }
 
-}

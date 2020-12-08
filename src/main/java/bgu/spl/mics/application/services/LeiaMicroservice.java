@@ -33,6 +33,7 @@ public class LeiaMicroservice extends MicroService {
 		this.attacks = attacks;
 		attackFutures = new Future[attacks.length];
 		diary = Diary.getInstance();
+        System.out.println("liea has been created");  //TODO: delete this after finish debug
     }
 
     private boolean awaitAttacks() {
@@ -51,11 +52,13 @@ public class LeiaMicroservice extends MicroService {
     }
 
     private boolean sendDeactivationEvent() {
+        System.out.println("liea sent deactivation");  //TODO: delete this after finish debug
         Future<Boolean> future = sendEvent(new DeactivationEvent());
         return future.get(); // Wait until R2D2 finishes.
     }
 
     private void sendBombDestroyerEvent() {
+        System.out.println("liea sent bomb");  //TODO: delete this after finish debug
         Future<Boolean> future = sendEvent(new BombDestroyerEvent());
         future.get(); // Wait until Lando finishes.
     }
@@ -76,8 +79,10 @@ public class LeiaMicroservice extends MicroService {
             Future<Boolean> future = null;
             while (Objects.isNull(future)) { // No one received the message
                 future = sendEvent(new AttackEvent(attacks[i])); // Send the message again until someone receives it
+                notifyAll();
             }
             this.attackFutures[i] = future;
+            System.out.println("liea sent attack");  //TODO: delete this after finish debug
         }
 
         // Await the attacks' results:

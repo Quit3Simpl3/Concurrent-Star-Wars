@@ -7,6 +7,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.concurrent.CountDownLatch;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class MessageBusTest {
@@ -19,6 +21,8 @@ class MessageBusTest {
     MicroService lando;
     Broadcast broadTest,broadTest1;
     Event exampleEvent1, exampleEvent2, exampleEvent3;
+    CountDownLatch init;
+
 
     @BeforeEach
     void setUp() {
@@ -28,15 +32,18 @@ class MessageBusTest {
         exampleEvent2 = new ExampleEvent("test_event2");
         exampleEvent3 = new ExampleEvent("test_event3");
         mb = MessageBusImpl.getInstance();
-        c3po = new C3POMicroservice();
-        han = new HanSoloMicroservice();
-        lando = new LandoMicroservice(10);
+        c3po = new C3POMicroservice(init);
+        han = new HanSoloMicroservice(init);
+        lando = new LandoMicroservice(10,init);
         broadTest = new ExampleBroadcast("test_broadcast");
         broadTest1 = new ExampleBroadcast("test_broadcast1");
     }
 
     @AfterEach
     void tearDown() {
+        mb.unregister(han);
+        mb.unregister(lando);
+        mb.unregister(c3po);
     }
 
     @Test
