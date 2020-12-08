@@ -30,7 +30,7 @@ public class Main {
 	}
 
 	private static void generateTestResults(String path, long start_timestamp, long end_timestamp) {
-		println("\n*** TEST RESULTS ***");
+		println("\n**** TEST RESULTS ****");
 		Diary diary = Diary.getInstance();
 
 		long timediff_finish_attackers = Math.abs(diary.getC3POFinish() - diary.getHanSoloFinish());
@@ -52,7 +52,7 @@ public class Main {
 
 		println("Program end after start: " + (end_timestamp - start_timestamp));
 
-		println("*** END ***");
+		println("**** END ****");
 	}
 	// TODO: DELETE BEFORE SUBMITTING!!!
 
