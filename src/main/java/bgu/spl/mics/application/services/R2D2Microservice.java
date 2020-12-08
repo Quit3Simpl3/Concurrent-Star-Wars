@@ -39,8 +39,7 @@ public class R2D2Microservice extends MicroService {
         };
         this.subscribeBroadcast(TerminateBroadcast.class, terminated);
 
-
-        Callback<DeactivationEvent> Deactivat = new Callback<DeactivationEvent>() {
+        Callback<DeactivationEvent> deactivationCallback = new Callback<DeactivationEvent>() {
             @Override
             public void call(DeactivationEvent c) {
                 try {
@@ -51,7 +50,7 @@ public class R2D2Microservice extends MicroService {
                 }
             }
         };
-        this.subscribeEvent(DeactivationEvent.class, Deactivat);
+        this.subscribeEvent(DeactivationEvent.class, deactivationCallback);
         init.countDown();
     }
 
