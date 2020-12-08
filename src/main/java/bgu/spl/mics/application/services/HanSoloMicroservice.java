@@ -24,6 +24,13 @@ public class HanSoloMicroservice extends MicroService {
     private Ewoks ewoks;
     private CountDownLatch init;
 
+    // TODO: DELETE BEFORE SUBMITTING!!!
+    public HanSoloMicroservice() {
+        super("Han");
+        diary = Diary.getInstance();
+        ewoks = Ewoks.getInstance();
+    }
+    // TODO: DELETE BEFORE SUBMITTING!!!
 
     public HanSoloMicroservice(CountDownLatch init) {
         super("Han");
@@ -38,6 +45,11 @@ public class HanSoloMicroservice extends MicroService {
         Callback<AttackEvent> myAttack = new Callback<AttackEvent>() {
             @Override
             public void call(AttackEvent c) {
+
+                // TODO: DELETE BEFORE SUBMITTING!!!
+                System.out.println("HanSolo: attacking.");
+                // TODO: DELETE BEFORE SUBMITTING!!!
+
                 Attack attack = c.getAttack();
                 ewoks.acquireEwoks(attack.GetSerials());
                 try {

@@ -1,16 +1,1 @@
-{
-  "attacks": [
-    {
-      "duration" : 1000,
-      "serials" : [1,2]
-    },
-    {
-      "duration" : 1000,
-      "serials" : [2,1]
-    }
-  ],
-  
-  "R2D2": 2000,
-  "Lando": 2000,
-  "Ewoks": 2
-}
+{"attacks":[{"serials":[2,3,4,5],"duration":331},{"serials":[2,3,4],"duration":240},{"serials":[3,4,5],"duration":330},{"serials":[4,5],"duration":262},{"serials":[2,3,4],"duration":153},{"serials":[5],"duration":228}],"R2D2":274,"Lando":297,"Ewoks":5,"testId":0,"numOfAttacks":6}

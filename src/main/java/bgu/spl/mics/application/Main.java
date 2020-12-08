@@ -89,28 +89,28 @@ public class Main {
 		}
 		initialize(input);
 		CountDownLatch init = new CountDownLatch(4);
-		HanSoloMicroservice HanSolo = new HanSoloMicroservice(init);
-		C3POMicroservice C3P0 = new C3POMicroservice(init);
-		R2D2Microservice R2D2 = new R2D2Microservice(input.getR2D2(),init);
-		LandoMicroservice Lando = new LandoMicroservice(input.getLando(),init);
-		LeiaMicroservice Leia = new LeiaMicroservice(input.getAttacks());
+		// Create threads:
+		Thread[] microservices = {
+			new Thread(new HanSoloMicroservice(init),"HanSolo"),
+			new Thread(new R2D2Microservice(input.getR2D2(),init), "R2D2"),
+			new Thread(new LandoMicroservice(input.getLando(),init), "Lando"),
+			new Thread(new C3POMicroservice(init), "C3PO"),
+		};
+		/*Thread hanSolo = new Thread(new HanSoloMicroservice(init),"HanSolo");
+		Thread r2d2 = new Thread(new R2D2Microservice(input.getR2D2(),init), "R2D2");
+		Thread lando = new Thread(new LandoMicroservice(input.getLando(),init), "Lando");
+		Thread c3po = new Thread(new C3POMicroservice(init), "C3PO");*/
+		Thread leia = new Thread(new LeiaMicroservice(input.getAttacks()), "Leia");
 
-
-
-		Thread hanSolo = new Thread(HanSolo);
-		Thread leia = new Thread(Leia);
-		Thread r2d2 = new Thread(R2D2);
-		Thread lando = new Thread(Lando);
-		Thread c3po = new Thread(C3P0);
-		Thread diaryThread = new Thread(new Runnable() {
-			@Override
-			public void run() {
+		Thread OutputWriter = new Thread(
+			() -> {
 				try {
-					hanSolo.join();
+					/*hanSolo.join();
 					leia.join();
 					r2d2.join();
 					c3po.join();
-					lando.join();
+					lando.join();*/
+					for (Thread thread : microservices) thread.join();
 					long end_timestamp = System.currentTimeMillis();
 					generateDiaryOutput(outputPath);
 
@@ -123,14 +123,16 @@ public class Main {
 					System.out.println(e.getMessage());
 				}
 				catch (InterruptedException ex) {}
-			}
-		});
+			},
+			"OutputWriter"
+		);
 
 		// Start threads:
-		hanSolo.start();
+		/*hanSolo.start();
 		c3po.start();
 		r2d2.start();
-		lando.start();
+		lando.start();*/
+		for (Thread thread : microservices) thread.start();
 	//	while (init.getCount()!=0) {   //TODO : not sure if we need loop
 			try {
 				init.await();
@@ -138,6 +140,6 @@ public class Main {
 	//	}
 		leia.start();
 		// Finally:
-		diaryThread.start();
+		OutputWriter.start();
 	}
 }

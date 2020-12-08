@@ -25,7 +25,13 @@ public class C3POMicroservice extends MicroService {
     private Ewoks ewoks;
     private CountDownLatch init;
 
-
+    // TODO: DELETE BEFORE SUBMITTING!!!
+    public C3POMicroservice() {
+        super("C3PO");
+        diary = Diary.getInstance();
+        ewoks = Ewoks.getInstance();
+    }
+    // TODO: DELETE BEFORE SUBMITTING!!!
 	
     public C3POMicroservice(CountDownLatch init) {
         super("C3PO");
@@ -39,6 +45,11 @@ public class C3POMicroservice extends MicroService {
         Callback<AttackEvent> myAttack = new Callback<AttackEvent>() {
             @Override
             public void call(AttackEvent c) {
+
+                // TODO: DELETE BEFORE SUBMITTING!!!
+                System.out.println("C3PO: attacking.");
+                // TODO: DELETE BEFORE SUBMITTING!!!
+
                 Attack attack = c.getAttack();
                 ewoks.acquireEwoks(attack.GetSerials());
                 try {
@@ -51,7 +62,7 @@ public class C3POMicroservice extends MicroService {
                     complete(c, true);
 
                     ewoks.releaseEwoks(attack.GetSerials());
-                    System.out.println("C3PO resease his ewoks");
+                    System.out.println("C3PO released ewoks");
                 }
             }
         };

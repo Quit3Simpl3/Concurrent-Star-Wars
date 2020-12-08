@@ -61,6 +61,12 @@ public class Diary {
             addTotalAttacks(attacks);
     }
 
+    // TODO: DELETE BEFORE SUBMITTING!!!
+    public void resetNumberAttacks() {
+        this.totalAttacks = new AtomicInteger(0);
+    }
+    // TODO: DELETE BEFORE SUBMITTING!!!
+
     /*
     * Setters:
      */
