@@ -24,13 +24,19 @@ public class HanSoloMicroservice extends MicroService {
     private Ewoks ewoks;
     private CountDownLatch init;
 
+    // TODO: DELETE BEFORE SUBMITTING!!!
+    public HanSoloMicroservice() {
+        super("Han");
+        diary = Diary.getInstance();
+        ewoks = Ewoks.getInstance();
+    }
+    // TODO: DELETE BEFORE SUBMITTING!!!
 
     public HanSoloMicroservice(CountDownLatch init) {
         super("Han");
         diary = Diary.getInstance();
         ewoks = Ewoks.getInstance();
         this.init = init;
-        System.out.println("HAN been created");  //TODO: delete this after finish debug
     }
 
     @Override
@@ -39,17 +45,32 @@ public class HanSoloMicroservice extends MicroService {
             @Override
             public void call(AttackEvent c) {
                 Attack attack = c.getAttack();
+
+                // TODO: DELETE BEFORE SUBMITTING!!!
+                System.out.println(Thread.currentThread().getName() + " acquiring ewoks...");
+                // TODO: DELETE BEFORE SUBMITTING!!!
+
                 ewoks.acquireEwoks(attack.GetSerials());
+
+                // TODO: DELETE BEFORE SUBMITTING!!!
+                System.out.println(Thread.currentThread().getName() + " acquired ewoks.");
+                // TODO: DELETE BEFORE SUBMITTING!!!
+
                 try {
+                    // TODO: DELETE BEFORE SUBMITTING!!!
+                    long start_tp = System.currentTimeMillis();
+                    System.out.println(Thread.currentThread().getName() + " attack-sleeping for " + attack.GetDuration() + " millis...");
+                    // TODO: DELETE BEFORE SUBMITTING!!!
                     Thread.sleep(attack.GetDuration());
+                    // TODO: DELETE BEFORE SUBMITTING!!!
+                    System.out.println(Thread.currentThread().getName() + " slept for " + (System.currentTimeMillis()-start_tp) + " millis.");
+                    // TODO: DELETE BEFORE SUBMITTING!!!
                 }
                 catch (InterruptedException e) { /*TODO: see if we need to handle exe during an attack*/}
                 finally {
                     diary.updateHanSolo(1,System.currentTimeMillis(),0);
-                    System.out.println("HANSOLO send complete");
                     complete(c, true);
                     ewoks.releaseEwoks(attack.GetSerials());
-                    System.out.println("hansolo resease his ewoks");
                 }
             }
         };

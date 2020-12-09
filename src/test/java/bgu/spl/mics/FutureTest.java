@@ -33,19 +33,19 @@ public class FutureTest {
     @Test
     void testGet() {
         //first  - this check that its wait for resolve to be done
-        assertFalse(future.get() == null);
+        assertThrows(IllegalMonitorStateException.class, ()->future.get(500, TimeUnit.MILLISECONDS));
         //second  - this check that its bring the right result
         String str = "someResult";
         future.resolve(str);
-        String result = future.get();
+        String result = future.get(500,TimeUnit.MILLISECONDS);
         assertTrue(str.equals(result));
         //third - check what happen after the get method works
-        assertTrue(str.equals(future.get()));
+        assertTrue(str.equals(future.get(750,TimeUnit.MILLISECONDS)));
         assertTrue(future.isDone());
         //check for second assigment
         String result2="someResult2";
         future.resolve(result2);
-        assertTrue(result2.equals(future.get()));
+        assertTrue(result2.equals(future.get(1500,TimeUnit.MILLISECONDS)));
 
         //same for get(time,timeunit)
         //first  - this check that its wait for resolve to be done
