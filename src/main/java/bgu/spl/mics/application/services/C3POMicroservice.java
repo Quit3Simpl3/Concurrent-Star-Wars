@@ -48,30 +48,11 @@ public class C3POMicroservice extends MicroService {
             public void call(AttackEvent c) {
                 Attack attack = c.getAttack();
 
-                // TODO: DELETE BEFORE SUBMITTING!!!
-                System.out.println(Thread.currentThread().getName() + " starting attack: " + attack);
-                // TODO: DELETE BEFORE SUBMITTING!!!
-
-                // TODO: DELETE BEFORE SUBMITTING!!!
-                System.out.println(Thread.currentThread().getName() + " acquiring ewoks...");
-                // TODO: DELETE BEFORE SUBMITTING!!!
-
                 List<Integer> serials = attack.GetSerials();
                 ewoks.acquireEwoks(serials);
 
-                // TODO: DELETE BEFORE SUBMITTING!!!
-                System.out.println(Thread.currentThread().getName() + " acquired ewoks.");
-                // TODO: DELETE BEFORE SUBMITTING!!!
-
                 try {
-                    // TODO: DELETE BEFORE SUBMITTING!!!
-                    long start_tp = System.currentTimeMillis();
-                    System.out.println(Thread.currentThread().getName() + " attack-sleeping for " + attack.GetDuration() + " millis...");
-                    // TODO: DELETE BEFORE SUBMITTING!!!
                     Thread.sleep(attack.GetDuration());
-                    // TODO: DELETE BEFORE SUBMITTING!!!
-                    System.out.println(Thread.currentThread().getName() + " slept for " + (System.currentTimeMillis()-start_tp) + " millis.");
-                    // TODO: DELETE BEFORE SUBMITTING!!!
                 }
                 catch (InterruptedException e) { /*TODO: see if we need to handle exe during an attack*/}
                 finally {

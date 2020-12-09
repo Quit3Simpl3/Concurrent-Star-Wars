@@ -66,13 +66,7 @@ public class MessageBusImpl implements MessageBus {
 
 		if(!eventHash.get(type).contains(m)) { //TODO : we need to know if i can add twice
 			eventHash.get(type).add(m);
-			// TODO: DELETE BEFORE SUBMITTING!
-			System.out.println("Added " + m + " to " + type + " queue.");
-			// TODO: DELETE BEFORE SUBMITTING!
 		}
-		else { // TODO: DELETE BEFORE SUBMITTING!
-			System.out.println(m + " already in " + type + " queue!");
-		} // TODO: DELETE BEFORE SUBMITTING!
 	}
 
 	@Override
@@ -111,29 +105,16 @@ public class MessageBusImpl implements MessageBus {
 	@Override
 	public synchronized <T> Future<T> sendEvent(Event<T> e) {
 		if (_is_hashMap_invalid(eventHash, e, eventHash.get(e.getClass()))) {
-			// throw new IllegalArgumentException("No valid argument provided.");
 			// DO NOTHING (msg goes to trash)
 			return null;
 		}
 
-		// microServiceHash.get(eventHash.get(e.getClass()).peek()).add(e); // TODO: remove comment
-
-		// TODO: DELETE BEFORE SUBMITTING!!!
-		ConcurrentLinkedQueue event_queue = eventHash.get(e.getClass());
-		System.out.println("event_queue: " + event_queue);
-		MicroService m = (MicroService)event_queue.poll();
-		System.out.println("m: " + m);
-		System.out.println("microServiceHash: " + microServiceHash);
-		ConcurrentLinkedQueue msq = microServiceHash.get(m);
-		System.out.println("msq: " + msq);
-		msq.add(e);
-
-		System.out.println(m.getName() + " assigned event: " + e);
-		eventHash.get(e.getClass()).add(m);
-		// TODO: DELETE BEFORE SUBMITTING!!!
-
+		// Get next MicroService:
+		MicroService microService = eventHash.get(e.getClass()).poll();
+		// Add the event to the MicroService's queue:
+		microServiceHash.get(microService).add(e);
 		// Round-robin message assignment:
-		// eventHash.get(e.getClass()).add(eventHash.get(e.getClass()).poll()); // TODO: remove comment
+		eventHash.get(e.getClass()).add(microService);
 
 		// Handle future object:
 		Future<T> future = new Future<>();
@@ -155,24 +136,17 @@ public class MessageBusImpl implements MessageBus {
 	private void unsubscribe (Map map, MicroService m) {
 		for (Object b : map.keySet()) {
 			if (map.get(b) instanceof ConcurrentLinkedQueue) {
-
-				// TODO: DELETE BEFORE SUBMITTING!
-				System.out.println("Unsubscribing " + m + " from " + b);
-				// TODO: DELETE BEFORE SUBMITTING!
-
 				((ConcurrentLinkedQueue)map.get(b)).remove(m);
 			}
 		}
 	}
 
 	@Override
-	public void unregister (MicroService m){
+	public void unregister (MicroService m) {
 		microServiceHash.remove(m);
 		unsubscribe(eventHash,m);
 		unsubscribe(broadcastHash,m);
-				// TODO: remove m from eventHash and broadcastHasg
-
-			}
+	}
 
 	@Override
 	public synchronized Message awaitMessage (MicroService m) throws InterruptedException, IllegalStateException {
@@ -189,9 +163,6 @@ public class MessageBusImpl implements MessageBus {
 
 		try {
 			Message msg = this.microServiceHash.get(m).remove();
-			// TODO: DELETE BEFORE SUBMITTING!!!
-			System.out.println(Thread.currentThread().getName() + " got msg: " + msg);
-			// TODO: DELETE BEFORE SUBMITTING!!!
 			return msg;
 		}
 		catch (NoSuchElementException e) {

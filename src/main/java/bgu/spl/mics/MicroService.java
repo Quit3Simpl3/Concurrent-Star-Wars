@@ -53,9 +53,6 @@ public abstract class MicroService implements Runnable {
      *
      */
     private boolean executeCallback(Message msg) {
-        // TODO: DELETE BEFORE SUBMITTING!!!
-        System.out.println(Thread.currentThread().getName() + " executing callback for " + msg.getClass());
-        // TODO: DELETE BEFORE SUBMITTING!!!
         // Get the callback related to msg type:
         Callback callback = this.subscriptions.get(msg.getClass());
         // Execute the callback:
@@ -131,9 +128,6 @@ public abstract class MicroService implements Runnable {
      * 	       			null in case no micro-service has subscribed to {@code e.getClass()}.
      */
     protected final <T> Future<T> sendEvent(Event<T> e) {
-        // TODO: DELETE BEFORE SUBMITTING!!!
-        System.out.println(Thread.currentThread().getName() + " sending event " + e);
-        // TODO: DELETE BEFORE SUBMITTING!!!
         // Send the event throw the msg bus and return the provided Future object:
         return this.messageBus.sendEvent(e);
     }
@@ -160,9 +154,6 @@ public abstract class MicroService implements Runnable {
      *               {@code e}.
      */
     protected final <T> void complete(Event<T> e, T result) {
-        // TODO: DELETE BEFORE SUBMITTING!!!
-        System.out.println(Thread.currentThread().getName() + " completed with result: " + result);
-        // TODO: DELETE BEFORE SUBMITTING!!!
     	this.messageBus.complete(e, result);
     }
 
@@ -176,10 +167,6 @@ public abstract class MicroService implements Runnable {
      * message.
      */
     protected final void terminate() {
-        // TODO: DELETE BEFORE SUBMITTING!!!
-    	System.out.println(Thread.currentThread().getName() + " terminating...");
-        // TODO: DELETE BEFORE SUBMITTING!!!
-
         this.terminate = true;
     }
 
@@ -208,11 +195,6 @@ public abstract class MicroService implements Runnable {
             try {
                 callback_called = false;
                 try {
-
-                    // TODO: DELETE BEFORE SUBMITTING!!!
-                    System.out.println(Thread.currentThread().getName() + " awaiting message...");
-                    // TODO: DELETE BEFORE SUBMITTING!!!
-
                     msg = this.messageBus.awaitMessage(this);
                 }
                 catch (IllegalStateException e) { // Handle MicroService isn't registered
@@ -238,9 +220,5 @@ public abstract class MicroService implements Runnable {
         }
         // Unregister this MicroService from the msg bus:
         this.messageBus.unregister(this);
-
-        // TODO: DELETE BEFORE SUBMITTING!!!
-        System.out.println(Thread.currentThread().getName() + " terminated.");
-        // TODO: DELETE BEFORE SUBMITTING!!!
     }
 }
