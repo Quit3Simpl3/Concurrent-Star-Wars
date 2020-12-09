@@ -22,7 +22,6 @@ public class Ewoks {
     public static synchronized Ewoks getInstance() {
         if (Objects.isNull(instance))
             instance = new Ewoks();
-
         return instance;
     }
   
@@ -64,10 +63,16 @@ public class Ewoks {
         int acquired_ewoks = 0;
         for (Integer serial : serialNumbers) {
             Ewok ewok = this.getEwok(serial);
+            // TODO: DELETE BEFORE SUBMITTING!!!
+            System.out.println(Thread.currentThread().getName() + " trying to acquire ewok no. " + serial + "...");
+            // TODO: DELETE BEFORE SUBMITTING!!!
             // Block thread until Ewok is available, and all other threads waiting
             // to use acquireEwoks() will wait as well:
             while(!ewok.isAvailable()) {
                 try {
+                    // TODO: DELETE BEFORE SUBMITTING!!!
+                    System.out.println(Thread.currentThread().getName() + " waiting for ewok no. " + serial + "...");
+                    // TODO: DELETE BEFORE SUBMITTING!!!
                     this.wait();
                 }
                 catch (InterruptedException e) {}
@@ -76,6 +81,9 @@ public class Ewoks {
             if (ewok.isAvailable()) {
                 ewok.acquire();
                 acquired_ewoks++;
+                // TODO: DELETE BEFORE SUBMITTING!!!
+                System.out.println(Thread.currentThread().getName() + " acquired ewok no. " + serial);
+                // TODO: DELETE BEFORE SUBMITTING!!!
             }
         }
 
@@ -90,6 +98,9 @@ public class Ewoks {
     public synchronized void releaseEwoks(List<Integer> serialNumbers) {
         for (Integer serial : serialNumbers) {
             this.getEwok(serial).release();
+            // TODO: DELETE BEFORE SUBMITTING!!!
+            System.out.println(Thread.currentThread().getName() + " released ewok no. " + serial);
+            // TODO: DELETE BEFORE SUBMITTING!!!
             notifyAll(); // Notify all the microservices waiting for ewoks to be released.
         }
     }

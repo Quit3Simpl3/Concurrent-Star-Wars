@@ -6,6 +6,7 @@ import bgu.spl.mics.application.messages.AttackEvent;
 import bgu.spl.mics.application.messages.TerminateBroadcast;
 import bgu.spl.mics.application.passiveObjects.*;
 
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 
@@ -45,24 +46,38 @@ public class C3POMicroservice extends MicroService {
         Callback<AttackEvent> myAttack = new Callback<AttackEvent>() {
             @Override
             public void call(AttackEvent c) {
-
-                // TODO: DELETE BEFORE SUBMITTING!!!
-                System.out.println("C3PO: attacking.");
-                // TODO: DELETE BEFORE SUBMITTING!!!
-
                 Attack attack = c.getAttack();
-                ewoks.acquireEwoks(attack.GetSerials());
+
+                // TODO: DELETE BEFORE SUBMITTING!!!
+                System.out.println(Thread.currentThread().getName() + " starting attack: " + attack);
+                // TODO: DELETE BEFORE SUBMITTING!!!
+
+                // TODO: DELETE BEFORE SUBMITTING!!!
+                System.out.println(Thread.currentThread().getName() + " acquiring ewoks...");
+                // TODO: DELETE BEFORE SUBMITTING!!!
+
+                List<Integer> serials = attack.GetSerials();
+                ewoks.acquireEwoks(serials);
+
+                // TODO: DELETE BEFORE SUBMITTING!!!
+                System.out.println(Thread.currentThread().getName() + " acquired ewoks.");
+                // TODO: DELETE BEFORE SUBMITTING!!!
+
                 try {
+                    // TODO: DELETE BEFORE SUBMITTING!!!
+                    long start_tp = System.currentTimeMillis();
+                    System.out.println(Thread.currentThread().getName() + " attack-sleeping for " + attack.GetDuration() + " millis...");
+                    // TODO: DELETE BEFORE SUBMITTING!!!
                     Thread.sleep(attack.GetDuration());
+                    // TODO: DELETE BEFORE SUBMITTING!!!
+                    System.out.println(Thread.currentThread().getName() + " slept for " + (System.currentTimeMillis()-start_tp) + " millis.");
+                    // TODO: DELETE BEFORE SUBMITTING!!!
                 }
                 catch (InterruptedException e) { /*TODO: see if we need to handle exe during an attack*/}
                 finally {
                     diary.updateC3PO(1,System.currentTimeMillis(),0);
-                    System.out.println("C3PO send complete");
                     complete(c, true);
-
                     ewoks.releaseEwoks(attack.GetSerials());
-                    System.out.println("C3PO released ewoks");
                 }
             }
         };

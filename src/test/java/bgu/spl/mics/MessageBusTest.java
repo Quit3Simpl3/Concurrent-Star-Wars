@@ -53,19 +53,9 @@ class MessageBusTest {
 
         mb.sendEvent(exampleEvent1);
 
-        // Test awaitMessage without a message waiting:
-        /*try {
-            testMsg1 = mb.awaitMessage(han);
-            testMsg2 = mb.awaitMessage(c3po);
-        }
-        catch (InterruptedException e) {
-            assertNull(testMsg1);
-            assertNull(testMsg2);
-        }*/
         mb.subscribeEvent(ExampleEvent.class, han);
 
         mb.sendEvent(exampleEvent1);
-
 
         try {
             testMsg1 = mb.awaitMessage(han);
@@ -77,7 +67,7 @@ class MessageBusTest {
         assertNotNull(testMsg1);
         assertNull(testMsg2);
 
-        assertEquals(((ExampleBroadcast)testMsg1).getSenderId(),((ExampleBroadcast)broadTest).getSenderId());
+        assertEquals(((ExampleEvent)testMsg1).getSenderName(),((ExampleEvent)exampleEvent1).getSenderName());
     }
 
     @Test
@@ -87,24 +77,7 @@ class MessageBusTest {
 
         mb.sendBroadcast(broadTest);
 
-        /*try {
-            testMsg1 = mb.awaitMessage(han);
-            testMsg2 = mb.awaitMessage(c3po);
-        } catch (InterruptedException e) {
-            assertNull(testMsg1);
-            assertNull(testMsg2);
-        }*/
-
         mb.subscribeBroadcast(broadTest.getClass(), han);
-        /*mb.sendBroadcast(broadTest);
-
-        try {
-            testMsg1 = mb.awaitMessage(han);
-            testMsg2 = mb.awaitMessage(c3po);
-        } catch (InterruptedException e) {
-            assertNotNull(testMsg1);
-            assertNull(testMsg2);
-        }*/
         mb.subscribeBroadcast(broadTest.getClass(), c3po);
         mb.sendBroadcast(broadTest1);
 

@@ -34,7 +34,6 @@ public class R2D2Microservice extends MicroService {
             public void call(TerminateBroadcast c) {
                 diary.setR2D2Terminate(System.currentTimeMillis());
                 terminate();
-
             }
         };
         this.subscribeBroadcast(TerminateBroadcast.class, terminated);
@@ -43,11 +42,19 @@ public class R2D2Microservice extends MicroService {
             @Override
             public void call(DeactivationEvent c) {
                 try {
+                    // TODO: DELETE BEFORE SUBMITTING!!!
+                    long start_tp = System.currentTimeMillis();
+                    System.out.println(Thread.currentThread().getName() + " sleeping for " + duration + "...");
+                    // TODO: DELETE BEFORE SUBMITTING!!!
                     Thread.sleep(duration);
+                    // TODO: DELETE BEFORE SUBMITTING!!!
+                    System.out.println(Thread.currentThread().getName() + " done sleeping.");
+                    System.out.println("***TEST: " + Thread.currentThread().getName() + " slept for " + (System.currentTimeMillis()-start_tp) + " millis.");
+                    // TODO: DELETE BEFORE SUBMITTING!!!
                     diary.setR2D2Deactivate(System.currentTimeMillis());
                     complete(c, true);
-                } catch (InterruptedException e) {
                 }
+                catch (InterruptedException e) {}
             }
         };
         this.subscribeEvent(DeactivationEvent.class, deactivationCallback);

@@ -73,8 +73,11 @@ public class Main {
 		long start_timestamp = System.currentTimeMillis();
 		// TODO: DELETE BEFORE SUBMITTING!!!
 
+		if (args == null) return;
+
 		String inputPath = args[0];
 		String outputPath = args[1];
+
 		Input input = null;
 
 
@@ -92,8 +95,8 @@ public class Main {
 		// Create threads:
 		Thread[] microservices = {
 			new Thread(new HanSoloMicroservice(init),"HanSolo"),
-			new Thread(new R2D2Microservice(input.getR2D2(),init), "R2D2"),
-			new Thread(new LandoMicroservice(input.getLando(),init), "Lando"),
+			new Thread(new R2D2Microservice(input.getR2D2(), init), "R2D2"),
+			new Thread(new LandoMicroservice(input.getLando(), init), "Lando"),
 			new Thread(new C3POMicroservice(init), "C3PO"),
 		};
 		/*Thread hanSolo = new Thread(new HanSoloMicroservice(init),"HanSolo");
