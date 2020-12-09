@@ -33,24 +33,12 @@ public class Future<T> {
      * 	       
      */
 	public synchronized T get() {
-		/*Runnable checkIsDone = () -> {
-			while (!this.isDone()) {
-				try {
-					this.wait();
-				}
-				catch (InterruptedException e) {}
-			}
-		};
-		Thread checker = new Thread(checkIsDone);
-		checker.start();*/ // Is this non-blocking?
-
 		while (!this.isDone()) {
 			try {
 				this.wait();
 			}
 			catch (InterruptedException e) {}
 		}
-
 		return this._get_result();
 	}
 
@@ -77,7 +65,6 @@ public class Future<T> {
      * @return true if this object has been resolved, false otherwise
      */
 	public boolean isDone() {
-
 		return this.isDone;
 	}
 	
