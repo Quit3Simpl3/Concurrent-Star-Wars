@@ -5,7 +5,6 @@ import bgu.spl.mics.application.services.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
@@ -33,10 +32,20 @@ public class Main {
 		println("\n**** TEST RESULTS ****");
 		Diary diary = Diary.getInstance();
 
+		println("HanSoloFinish: " + (diary.getHanSoloFinish()-start_timestamp));
+		println("C3POFinish: " + (diary.getC3POFinish()-start_timestamp));
+
+//		println("HanSoloTerminate: " + (diary.getHanSoloTerminate()-start_timestamp));
+//		println("C3POTerminate: " + (diary.getC3POTerminate()-start_timestamp));
+//		println("LeiaTerminate: " + (diary.getLeiaTerminate()-start_timestamp));
+//		println("R2D2Terminate: " + (diary.getR2D2Terminate()-start_timestamp));
+//		println("LandoTerminate: " + (diary.getLandoTerminate()-start_timestamp));
+
 		long timediff_finish_attackers = Math.abs(diary.getC3POFinish() - diary.getHanSoloFinish());
 		println("First attacker finished after start: " + (Math.min(diary.getC3POFinish(), diary.getHanSoloFinish()) - start_timestamp));
 		println("Last attacker finished after start: " + (Math.max(diary.getC3POFinish(), diary.getHanSoloFinish()) - start_timestamp));
 		println("Time diff attack finish: " + timediff_finish_attackers);
+		if (timediff_finish_attackers <= 0) println("!!!!!!!!!!!!!!");
 
 		long first_termination = Math.min(diary.getHanSoloTerminate(), diary.getC3POTerminate());
 		first_termination = Math.min(first_termination, diary.getR2D2Terminate());
@@ -99,10 +108,6 @@ public class Main {
 			new Thread(new LandoMicroservice(input.getLando(), init), "Lando"),
 			new Thread(new C3POMicroservice(init), "C3PO"),
 		};
-		/*Thread hanSolo = new Thread(new HanSoloMicroservice(init),"HanSolo");
-		Thread r2d2 = new Thread(new R2D2Microservice(input.getR2D2(),init), "R2D2");
-		Thread lando = new Thread(new LandoMicroservice(input.getLando(),init), "Lando");
-		Thread c3po = new Thread(new C3POMicroservice(init), "C3PO");*/
 		Thread leia = new Thread(new LeiaMicroservice(input.getAttacks()), "Leia");
 
 		Thread OutputWriter = new Thread(
@@ -130,17 +135,12 @@ public class Main {
 			"OutputWriter"
 		);
 
-		// Start threads:
-		/*hanSolo.start();
-		c3po.start();
-		r2d2.start();
-		lando.start();*/
 		for (Thread thread : microservices) thread.start();
-	//	while (init.getCount()!=0) {   //TODO : not sure if we need loop
-			try {
-				init.await();
-			} catch (InterruptedException e) {}
-	//	}
+		try {
+			init.await();
+		}
+		catch (InterruptedException e) {}
+
 		leia.start();
 		// Finally:
 		OutputWriter.start();

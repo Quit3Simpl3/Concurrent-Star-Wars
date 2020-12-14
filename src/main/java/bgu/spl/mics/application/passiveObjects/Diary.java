@@ -13,7 +13,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class Diary {
     // Private fields:
-    private static Diary instance = null;
     private AtomicInteger totalAttacks; // Sum of HanSolo and C3PO attacks.
     private long HanSoloFinish;
     private long C3POFinish;
@@ -23,6 +22,14 @@ public class Diary {
     private long C3POTerminate;
     private long R2D2Terminate;
     private long LandoTerminate;
+
+    private final static class SingletonHolder {
+        private static final Diary instance = new Diary();
+    }
+
+    public static Diary getInstance() {
+        return SingletonHolder.instance;
+    }
 
     private Diary() { // Constructor
         this.totalAttacks = new AtomicInteger(0);
@@ -36,12 +43,12 @@ public class Diary {
         this.LandoTerminate = 0;
     }
 
-    public static synchronized Diary getInstance() {
+    /*public static synchronized Diary getInstance() {
       if (Objects.isNull(instance))
         instance = new Diary();
       
       return instance;
-    }
+    }*/
   
     public void updateHanSolo(int attacks, long finish, long terminate) {
         if (finish > 0)
