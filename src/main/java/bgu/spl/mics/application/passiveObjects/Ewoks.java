@@ -1,13 +1,7 @@
 package bgu.spl.mics.application.passiveObjects;
 
-import bgu.spl.mics.MessageBusImpl;
-
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Objects;
-
-import java.util.List;
-import java.util.Objects;
 
 /**
  * Passive object representing the resource manager.
@@ -60,6 +54,7 @@ public class Ewoks {
      * are released.
      * @param serialNumbers - Ewoks' serial numbers.
      */
+    @SuppressWarnings("UnusedReturnValue")
     public synchronized boolean acquireEwoks(List<Integer> serialNumbers) {
         int acquired_ewoks = 0;
         for (Integer serial : serialNumbers) {

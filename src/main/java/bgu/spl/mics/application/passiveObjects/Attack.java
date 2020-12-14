@@ -2,7 +2,6 @@ package bgu.spl.mics.application.passiveObjects;
 
 import java.util.List;
 
-
 /**
  * Passive data-object representing an attack object.
  * You must not alter any of the given public methods of this class.
@@ -13,18 +12,16 @@ public class Attack {
     final List<Integer> serials;
     final int duration;
 
-    /**
-     * Constructor.
-     */
     public Attack(List<Integer> serialNumbers, int duration) {
         this.serials = serialNumbers;
         this.duration = duration;
     }
+
     public List<Integer> GetSerials () {
         return serials;
     }
-    public int GetDuration(){
+
+    public int GetDuration() {
         return duration;
     }
-
 }

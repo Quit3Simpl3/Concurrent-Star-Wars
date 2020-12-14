@@ -34,34 +34,28 @@ public class C3POMicroservice extends MicroService {
 
     @Override
     protected void initialize() {
-        Callback<AttackEvent> myAttack = new Callback<AttackEvent>() {
-            @Override
-            public void call(AttackEvent c) {
-                Attack attack = c.getAttack();
+        Callback<AttackEvent> myAttack = c -> {
+            Attack attack = c.getAttack();
 
-                List<Integer> serials = attack.GetSerials();
-                ewoks.acquireEwoks(serials);
+            List<Integer> serials = attack.GetSerials();
+            ewoks.acquireEwoks(serials);
 
-                try {
-                    Thread.sleep(attack.GetDuration());
-                }
-                catch (InterruptedException e) {}
-                finally {
-                    diary.updateC3PO(1,System.currentTimeMillis(),0);
-                    complete(c, true);
-                    ewoks.releaseEwoks(attack.GetSerials());
-                }
+            try {
+                Thread.sleep(attack.GetDuration());
+            }
+            catch (InterruptedException e) {}
+            finally {
+                diary.updateC3PO(1,System.currentTimeMillis(),0);
+                complete(c, true);
+                ewoks.releaseEwoks(attack.GetSerials());
             }
         };
         subscribeEvent(AttackEvent.class, myAttack);
 
 
-        Callback<TerminateBroadcast> terminated = new Callback<TerminateBroadcast>(){
-            @Override
-            public void call(TerminateBroadcast c) {
-                terminate();
-                diary.updateC3PO(0,0,System.currentTimeMillis());
-            }
+        Callback<TerminateBroadcast> terminated = c -> {
+            terminate();
+            diary.updateC3PO(0,0,System.currentTimeMillis());
         };
         this.subscribeBroadcast(TerminateBroadcast.class,terminated);
         init.countDown();

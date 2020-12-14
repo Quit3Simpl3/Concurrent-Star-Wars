@@ -7,6 +7,4 @@ package bgu.spl.mics;
  * When sending an event, it will be received only by a single subscriber in a
  * Round-Robin fashion.
  */
-public interface Event<T> extends Message {
-
-}
+public interface Event<T> extends Message {}

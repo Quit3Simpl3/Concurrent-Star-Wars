@@ -32,6 +32,7 @@ public abstract class MicroService implements Runnable {
      * @param name the micro-service name (used mainly for debugging purposes -
      *             does not have to be unique)
      */
+    @SuppressWarnings("Convert2Diamond")
     public MicroService(String name) {
     	this.name = name;
     	this.messageBus = MessageBusImpl.getInstance();

@@ -5,6 +5,4 @@ package bgu.spl.mics;
  * using the {@link MessageBus}, it will be received by all the subscribers of this
  * Broadcast-message type (the message Class).
  */
-public interface Broadcast extends Message {
-
-}
+public interface Broadcast extends Message {}

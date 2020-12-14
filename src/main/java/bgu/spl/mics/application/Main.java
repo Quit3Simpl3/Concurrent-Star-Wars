@@ -3,7 +3,6 @@ package bgu.spl.mics.application;
 import bgu.spl.mics.application.passiveObjects.*;
 import bgu.spl.mics.application.services.*;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -19,8 +18,17 @@ public class Main {
 		// Create the Ewoks:
 		Ewoks ewoks = Ewoks.getInstance();
 		ewoks.createEwoks(input.getEwoks());
-		// Create the diary:
-		Diary.getInstance();
+	}
+
+	private static void printOutput(int attacks, long timediff_finish, long timediff_terminate) {
+		/*
+		* There are 2 attacks.
+		* HanSolo and C3PO finish their tasks ~1000 milliseconds one after the other.
+		* All threads terminate ~4000 milliseconds later.
+		*/
+		System.out.println("There are " + attacks + " attacks.");
+		System.out.println("HanSolo and C3PO finished their tasks ~" + timediff_finish + " milliseconds one after the other.");
+		System.out.println("All threads terminated ~" + timediff_terminate + " milliseconds later.");
 	}
 
 	// TODO: DELETE BEFORE SUBMITTING!!!
@@ -110,6 +118,20 @@ public class Main {
 					for (Thread thread : microservices) thread.join();
 					long end_timestamp = System.currentTimeMillis();
 					generateDiaryOutput(outputPath);
+
+					// Print the output:
+					Diary diary = Diary.getInstance();
+					int attacks = diary.getTotalAttacks();
+					long timediff_finish = Math.abs(diary.getHanSoloFinish() - diary.getC3POFinish());
+					long last_finish = Math.max(diary.getHanSoloFinish(), diary.getC3POFinish());
+
+					long last_termination = Math.max(diary.getHanSoloTerminate(), diary.getC3POTerminate());
+					last_termination = Math.max(last_termination, diary.getR2D2Terminate());
+					last_termination = Math.max(last_termination, diary.getLeiaTerminate());
+					last_termination = Math.max(last_termination, diary.getLandoTerminate());
+					long timediff_terminate = Math.abs(last_finish - last_termination);
+
+					printOutput(attacks, timediff_finish, timediff_terminate);
 
 					// TODO: DELETE BEFORE SUBMITTING!!!
 					generateTestResults("test_results.json", start_timestamp, end_timestamp);

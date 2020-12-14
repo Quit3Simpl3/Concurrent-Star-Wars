@@ -2,22 +2,14 @@ package bgu.spl.mics.application.messages;
 import bgu.spl.mics.Event;
 import bgu.spl.mics.application.passiveObjects.Attack;
 
-import java.util.List;
-
 public class AttackEvent implements Event<Boolean> {
-
     private final Attack attack;
-  //  private boolean resulte;
-    
-    public AttackEvent (Attack attack)
-    {
-  //      resulte = false;
+
+    public AttackEvent (Attack attack) {
         this.attack = attack;
     }
 
-	//public List<Integer> getEwokForAttack() {
-  //      return ewoksForAttack;
- //   }
-    public Attack getAttack(){ return attack;}
-   // public void complete
+    public Attack getAttack() {
+        return attack;
+    }
 }

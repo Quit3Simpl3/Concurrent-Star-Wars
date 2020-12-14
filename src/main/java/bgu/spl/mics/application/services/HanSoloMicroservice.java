@@ -33,32 +33,26 @@ public class HanSoloMicroservice extends MicroService {
 
     @Override
     protected void initialize() {
-        Callback<AttackEvent> myAttack = new Callback<AttackEvent>() {
-            @Override
-            public void call(AttackEvent c) {
-                Attack attack = c.getAttack();
+        Callback<AttackEvent> myAttack = c -> {
+            Attack attack = c.getAttack();
 
-                ewoks.acquireEwoks(attack.GetSerials());
+            ewoks.acquireEwoks(attack.GetSerials());
 
-                try {
-                    Thread.sleep(attack.GetDuration());
-                }
-                catch (InterruptedException e) {}
-                finally {
-                    diary.updateHanSolo(1,System.currentTimeMillis(),0);
-                    complete(c, true);
-                    ewoks.releaseEwoks(attack.GetSerials());
-                }
+            try {
+                Thread.sleep(attack.GetDuration());
+            }
+            catch (InterruptedException e) {}
+            finally {
+                diary.updateHanSolo(1,System.currentTimeMillis(),0);
+                complete(c, true);
+                ewoks.releaseEwoks(attack.GetSerials());
             }
         };
         subscribeEvent(AttackEvent.class, myAttack);
 
-        Callback<TerminateBroadcast> terminated = new Callback<TerminateBroadcast>(){
-            @Override
-            public void call(TerminateBroadcast c) {
-                terminate();
-                diary.updateHanSolo(0,0,System.currentTimeMillis());
-            }
+        Callback<TerminateBroadcast> terminated = c -> {
+            terminate();
+            diary.updateHanSolo(0,0,System.currentTimeMillis());
         };
         this.subscribeBroadcast(TerminateBroadcast.class,terminated);
 

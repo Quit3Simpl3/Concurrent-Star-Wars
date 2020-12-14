@@ -1,8 +1,5 @@
 package bgu.spl.mics.application.passiveObjects;
 
-import bgu.spl.mics.MessageBusImpl;
-
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -42,13 +39,6 @@ public class Diary {
         this.R2D2Terminate = 0;
         this.LandoTerminate = 0;
     }
-
-    /*public static synchronized Diary getInstance() {
-      if (Objects.isNull(instance))
-        instance = new Diary();
-      
-      return instance;
-    }*/
   
     public void updateHanSolo(int attacks, long finish, long terminate) {
         if (finish > 0)
