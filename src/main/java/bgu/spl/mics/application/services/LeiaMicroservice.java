@@ -86,16 +86,8 @@ public class LeiaMicroservice extends MicroService {
 
         // Await the attacks' results:
         if (awaitAttacks())
-            if (sendDeactivationEvent()) {
-                System.out.println(" finish with deactivat ");
-                if(sendBombDestroyerEvent()){
-                 System.out.println(" finish with bomb ");
-                 sendBroadcast(new TerminateBroadcast("Leia"));
-
-                }
-
-
-
-            }
+            if (sendDeactivationEvent())
+                if(sendBombDestroyerEvent())
+                    sendBroadcast(new TerminateBroadcast("Leia"));
     }
 }
