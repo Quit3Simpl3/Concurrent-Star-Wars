@@ -24,14 +24,6 @@ public class HanSoloMicroservice extends MicroService {
     private Ewoks ewoks;
     private CountDownLatch init;
 
-    // TODO: DELETE BEFORE SUBMITTING!!!
-    public HanSoloMicroservice() {
-        super("Han");
-        diary = Diary.getInstance();
-        ewoks = Ewoks.getInstance();
-    }
-    // TODO: DELETE BEFORE SUBMITTING!!!
-
     public HanSoloMicroservice(CountDownLatch init) {
         super("Han");
         diary = Diary.getInstance();
@@ -51,7 +43,7 @@ public class HanSoloMicroservice extends MicroService {
                 try {
                     Thread.sleep(attack.GetDuration());
                 }
-                catch (InterruptedException e) { /*TODO: see if we need to handle exe during an attack*/}
+                catch (InterruptedException e) {}
                 finally {
                     diary.updateHanSolo(1,System.currentTimeMillis(),0);
                     complete(c, true);

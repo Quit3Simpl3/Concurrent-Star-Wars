@@ -58,7 +58,7 @@ public class Future<T> {
 
 		this.result = result; // IMPORTANT: do this before setting 'isDone', to prevent get() before setting the result.
 		this.isDone = true;
-		this.notifyAll(); // TODO: maybe 'notify()' instead? // Update the waiting thread so that it checks isDone()
+		this.notifyAll(); // Update the waiting thread so that it checks isDone()
 	}
 	
 	/**

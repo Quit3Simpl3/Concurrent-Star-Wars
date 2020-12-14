@@ -35,12 +35,6 @@ public class Main {
 		println("HanSoloFinish: " + (diary.getHanSoloFinish()-start_timestamp));
 		println("C3POFinish: " + (diary.getC3POFinish()-start_timestamp));
 
-//		println("HanSoloTerminate: " + (diary.getHanSoloTerminate()-start_timestamp));
-//		println("C3POTerminate: " + (diary.getC3POTerminate()-start_timestamp));
-//		println("LeiaTerminate: " + (diary.getLeiaTerminate()-start_timestamp));
-//		println("R2D2Terminate: " + (diary.getR2D2Terminate()-start_timestamp));
-//		println("LandoTerminate: " + (diary.getLandoTerminate()-start_timestamp));
-
 		long timediff_finish_attackers = Math.abs(diary.getC3POFinish() - diary.getHanSoloFinish());
 		println("First attacker finished after start: " + (Math.min(diary.getC3POFinish(), diary.getHanSoloFinish()) - start_timestamp));
 		println("Last attacker finished after start: " + (Math.max(diary.getC3POFinish(), diary.getHanSoloFinish()) - start_timestamp));
@@ -83,14 +77,10 @@ public class Main {
 		// TODO: DELETE BEFORE SUBMITTING!!!
 
 		if (args == null) return;
-
 		String inputPath = args[0];
 		String outputPath = args[1];
 
 		Input input = null;
-
-
-
 		try {
 			input = parseJson(inputPath);
 			if (input == null) throw new IOException();
@@ -100,7 +90,10 @@ public class Main {
 			System.out.println(e.getMessage());
 		}
 		initialize(input);
+
+		// Countdown latch preparation:
 		CountDownLatch init = new CountDownLatch(4);
+
 		// Create threads:
 		Thread[] microservices = {
 			new Thread(new HanSoloMicroservice(init),"HanSolo"),
@@ -113,11 +106,7 @@ public class Main {
 		Thread OutputWriter = new Thread(
 			() -> {
 				try {
-					/*hanSolo.join();
-					leia.join();
-					r2d2.join();
-					c3po.join();
-					lando.join();*/
+					// Wait until all threads are terminated:
 					for (Thread thread : microservices) thread.join();
 					long end_timestamp = System.currentTimeMillis();
 					generateDiaryOutput(outputPath);
@@ -127,7 +116,7 @@ public class Main {
 					// TODO: DELETE BEFORE SUBMITTING!!!
 				}
 				catch (IOException e) {
-					System.out.println("Json writing error. Check the file.");
+					System.out.println("Json writing error.");
 					System.out.println(e.getMessage());
 				}
 				catch (InterruptedException ex) {}
@@ -135,14 +124,15 @@ public class Main {
 			"OutputWriter"
 		);
 
+		// Start the microservice threads:
 		for (Thread thread : microservices) thread.start();
 		try {
 			init.await();
 		}
 		catch (InterruptedException e) {}
-
+		// Start Leia's thread:
 		leia.start();
-		// Finally:
+		// Write the output json:
 		OutputWriter.start();
 	}
 }

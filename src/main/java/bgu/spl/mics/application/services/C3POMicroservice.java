@@ -21,18 +21,9 @@ import java.util.concurrent.CountDownLatch;
 
 
 public class C3POMicroservice extends MicroService {
-
     private Diary diary;
     private Ewoks ewoks;
     private CountDownLatch init;
-
-    // TODO: DELETE BEFORE SUBMITTING!!!
-    public C3POMicroservice() {
-        super("C3PO");
-        diary = Diary.getInstance();
-        ewoks = Ewoks.getInstance();
-    }
-    // TODO: DELETE BEFORE SUBMITTING!!!
 	
     public C3POMicroservice(CountDownLatch init) {
         super("C3PO");
@@ -54,7 +45,7 @@ public class C3POMicroservice extends MicroService {
                 try {
                     Thread.sleep(attack.GetDuration());
                 }
-                catch (InterruptedException e) { /*TODO: see if we need to handle exe during an attack*/}
+                catch (InterruptedException e) {}
                 finally {
                     diary.updateC3PO(1,System.currentTimeMillis(),0);
                     complete(c, true);

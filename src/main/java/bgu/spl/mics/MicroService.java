@@ -57,7 +57,7 @@ public abstract class MicroService implements Runnable {
         Callback callback = this.subscriptions.get(msg.getClass());
         // Execute the callback:
         callback.call(msg);
-        return true; // TODO: maybe return 'true' only when no exception was thrown?
+        return true;
     }
 
     /**
@@ -139,11 +139,7 @@ public abstract class MicroService implements Runnable {
      * @param b The broadcast message to send
      */
     protected final void sendBroadcast(Broadcast b) {
-        // TODO: TEST
-        System.out.println(this.getName() + " send broadcast " + b.getClass());
-        // TODO: TEST
-
-    	this.messageBus.sendBroadcast(b);
+        this.messageBus.sendBroadcast(b);
     }
 
     /**
@@ -170,10 +166,6 @@ public abstract class MicroService implements Runnable {
      * message.
      */
     protected final void terminate() {
-        // TODO: TEST
-        System.out.println(Thread.currentThread().getName() + " terminating...");
-        // TODO: TEST
-
         this.terminate = true;
     }
 
@@ -202,10 +194,6 @@ public abstract class MicroService implements Runnable {
             try {
                 callback_called = false;
                 try {
-                    // TODO: TEST
-                    System.out.println(Thread.currentThread().getName() + " awaiting msg...");
-                    // TODO: TEST
-
                     msg = this.messageBus.awaitMessage(this);
                 }
                 catch (IllegalStateException e) { // Handle MicroService isn't registered

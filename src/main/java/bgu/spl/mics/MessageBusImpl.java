@@ -27,7 +27,7 @@ public class MessageBusImpl implements MessageBus {
 		eventHash = new ConcurrentHashMap<Class<? extends Event>, ConcurrentLinkedQueue<MicroService>>() {};
 		broadcastHash = new ConcurrentHashMap<Class<? extends Broadcast>, ConcurrentLinkedQueue<MicroService>>() {};
 		microServiceHash = new ConcurrentHashMap<MicroService, ConcurrentLinkedQueue<Message>>() {};
-		futureMap = new ConcurrentHashMap<Event, Future>(); // TODO: Maybe Event<?>, Future<?> ?
+		futureMap = new ConcurrentHashMap<Event, Future>();
 
 	}
 
@@ -115,10 +115,6 @@ public class MessageBusImpl implements MessageBus {
 			// DO NOTHING (msg goes to trash)
 			return null;
 		}
-
-		// TODO: TEST
-		System.out.println("eventHash: " + eventHash.get(e.getClass()));
-		// TODO: TEST
 
 		// Get next MicroService:
 		MicroService microService = eventHash.get(e.getClass()).poll();

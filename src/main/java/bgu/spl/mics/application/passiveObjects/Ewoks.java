@@ -60,10 +60,6 @@ public class Ewoks {
      * @param serialNumbers - Ewoks' serial numbers.
      */
     public synchronized boolean acquireEwoks(List<Integer> serialNumbers) {
-        // TODO: TEST
-        System.out.println(Thread.currentThread().getName() + " acquiring ewoks: " + serialNumbers);
-        // TODO: TEST
-
         int acquired_ewoks = 0;
         for (Integer serial : serialNumbers) {
             Ewok ewok = this.getEwok(serial);

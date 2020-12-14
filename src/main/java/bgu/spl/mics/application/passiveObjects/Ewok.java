@@ -14,7 +14,7 @@ public class Ewok {
     int serialNumber;
 	boolean available;
 
-	public Ewok() {/*TODO: Can we prevent usage of default constructor?*/}
+	public Ewok() {}
 
 	public Ewok(int serialNumber) {
 	    this.serialNumber = serialNumber;

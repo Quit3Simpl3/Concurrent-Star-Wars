@@ -46,7 +46,7 @@ public class LeiaMicroservice extends MicroService {
             Future<Boolean> future = futuresQueue.remove();
             result = null;
             if (future.isDone())
-                  result = future.get(10, TimeUnit.MILLISECONDS); // TODO: How many millis are enough?
+                  result = future.get(10, TimeUnit.MILLISECONDS);
             if (Objects.isNull(result)) // If attack isn't finished, put the future back in the queue to be checked again.
                 futuresQueue.add(future);
         }
