@@ -80,17 +80,16 @@ public class Future<T> {
      *         elapsed, return null.
      */
 	public T get(long timeout, TimeUnit unit) {
-		// TODO: calculate time delta USING TimeUnit
-		boolean time_passed = false;
+		long timeout_millis = TimeUnit.MILLISECONDS.convert(timeout, unit);
 		long start = System.currentTimeMillis();
-		while (!time_passed) {
+
+		do {
 			if (this.isDone()) return this._get_result();
-			time_passed = (System.currentTimeMillis() - start) > timeout;
 			try {
 				this.wait(1); // Thread waits for 1 millis and then checks again
-			}
-			catch (InterruptedException ignored) {}
-		}
+			} catch (InterruptedException e) {}
+		} while(!((System.currentTimeMillis() - start) > timeout_millis));
+
 		return null;
 	}
 }
