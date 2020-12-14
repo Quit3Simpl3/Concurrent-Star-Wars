@@ -14,8 +14,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 
 public class MessageBusImpl implements MessageBus {
-//	private static MessageBusImpl instance = null; // Implemented as Singleton
-
 	private Map<Class<? extends Event>, ConcurrentLinkedQueue<MicroService>> eventHash;
 	private Map<Class<? extends Broadcast>, ConcurrentLinkedQueue<MicroService>> broadcastHash;
 	private Map<MicroService, ConcurrentLinkedQueue<Message>> microServiceHash;
@@ -51,25 +49,24 @@ public class MessageBusImpl implements MessageBus {
 		);
 	}
 
-	// static synchronized method to get or create instance:
-	public static /*synchronized*/ MessageBusImpl getInstance() {
-		/*if (Objects.isNull(instance))
-			instance = new MessageBusImpl();
-
-		return instance;*/
-
+	// method to get or create instance:
+	public static MessageBusImpl getInstance() {
 		// SingletonHolder:
 		return SingletonHolder.instance;
 	}
 
 	@Override
 	public <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m) {
-		if (eventHash == null || eventHash.get(type) == null) {
-			ConcurrentLinkedQueue<MicroService> eventSubscribList = new ConcurrentLinkedQueue<MicroService>();
-			eventHash.put(type, eventSubscribList);
+		if (eventHash == null || eventHash.get(type) == null) { // Enter only if queue doesn't exist
+			synchronized (this) {
+				if (eventHash == null || eventHash.get(type) == null) {
+					ConcurrentLinkedQueue<MicroService> eventQueue = new ConcurrentLinkedQueue<MicroService>();
+					eventHash.put(type, eventQueue);
+				}
+			}
 		}
 
-		if(!eventHash.get(type).contains(m)) { //TODO : we need to know if i can add twice
+		if(!eventHash.get(type).contains(m)) {
 			eventHash.get(type).add(m);
 		}
 	}
@@ -77,10 +74,15 @@ public class MessageBusImpl implements MessageBus {
 	@Override
 	public void subscribeBroadcast(Class<? extends Broadcast> type, MicroService m) {
 		if (broadcastHash == null || broadcastHash.get(type) == null) {
-			ConcurrentLinkedQueue<MicroService> broadcastSubscribList = new ConcurrentLinkedQueue<MicroService>();
-			broadcastHash.put(type,broadcastSubscribList);
+			synchronized (this) {
+				if (broadcastHash == null || broadcastHash.get(type) == null) {
+					ConcurrentLinkedQueue<MicroService> broadcastQueue = new ConcurrentLinkedQueue<MicroService>();
+					broadcastHash.put(type, broadcastQueue);
+				}
+			}
 		}
-		if(!broadcastHash.get(type).contains(m)) { //TODO : we need to know if i can add twice
+
+		if(!broadcastHash.get(type).contains(m)) {
 			broadcastHash.get(type).add(m);
 		}
     }
@@ -114,8 +116,13 @@ public class MessageBusImpl implements MessageBus {
 			return null;
 		}
 
+		// TODO: TEST
+		System.out.println("eventHash: " + eventHash.get(e.getClass()));
+		// TODO: TEST
+
 		// Get next MicroService:
 		MicroService microService = eventHash.get(e.getClass()).poll();
+
 		// Add the event to the MicroService's queue:
 		microServiceHash.get(microService).add(e);
 		// Round-robin message assignment:

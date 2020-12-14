@@ -69,6 +69,7 @@ public class HanSoloMicroservice extends MicroService {
             }
         };
         this.subscribeBroadcast(TerminateBroadcast.class,terminated);
+
         init.countDown();
     }
 }

@@ -63,13 +63,17 @@ public class LeiaMicroservice extends MicroService {
         return future.get(); // Wait until Lando finishes.
     }
 
+    private void terminateLeia() {
+        terminate();
+        diary.setLeiaTerminate(System.currentTimeMillis());
+    }
+
     @Override
     protected void initialize() {
-        Callback<TerminateBroadcast> terminated = new Callback<TerminateBroadcast>(){
+        Callback<TerminateBroadcast> terminated = new Callback<TerminateBroadcast>() {
             @Override
             public void call(TerminateBroadcast c) {
-                terminate();
-                diary.setLeiaTerminate(System.currentTimeMillis());
+                terminateLeia();
             }
         };
         this.subscribeBroadcast(TerminateBroadcast.class,terminated);
@@ -79,7 +83,6 @@ public class LeiaMicroservice extends MicroService {
             Future<Boolean> future = null;
             while (Objects.isNull(future)) { // No one received the message
                 future = sendEvent(new AttackEvent(attacks[i])); // Send the message again until someone receives it
-
             }
             this.attackFutures[i] = future;
         }
@@ -87,7 +90,9 @@ public class LeiaMicroservice extends MicroService {
         // Await the attacks' results:
         if (awaitAttacks())
             if (sendDeactivationEvent())
-                if(sendBombDestroyerEvent())
+                if(sendBombDestroyerEvent()) {
                     sendBroadcast(new TerminateBroadcast("Leia"));
+                    // this.terminateLeia(); // TODO: Decide if we want this or just use the broadcast
+                }
     }
 }

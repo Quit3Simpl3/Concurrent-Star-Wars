@@ -13,7 +13,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class Diary {
     // Private fields:
-    private static Diary instance = null;
     private AtomicInteger totalAttacks; // Sum of HanSolo and C3PO attacks.
     private long HanSoloFinish;
     private long C3POFinish;

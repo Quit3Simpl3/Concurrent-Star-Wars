@@ -18,18 +18,13 @@ import java.util.Objects;
  * You can add ONLY private methods and fields to this class.
  */
 public class Ewoks {
-//    private static Ewoks instance = null;
     private Ewok[] ewoks;
 
     private final static class SingletonHolder {
         private final static Ewoks instance = new Ewoks();
     }
   
-    public static /*synchronized*/ Ewoks getInstance() {
-        /*if (Objects.isNull(instance))
-            instance = new Ewoks();
-        return instance;*/
-
+    public static Ewoks getInstance() {
         // SingletonHolder:
         return SingletonHolder.instance;
     }
@@ -65,6 +60,10 @@ public class Ewoks {
      * @param serialNumbers - Ewoks' serial numbers.
      */
     public synchronized boolean acquireEwoks(List<Integer> serialNumbers) {
+        // TODO: TEST
+        System.out.println(Thread.currentThread().getName() + " acquiring ewoks: " + serialNumbers);
+        // TODO: TEST
+
         int acquired_ewoks = 0;
         for (Integer serial : serialNumbers) {
             Ewok ewok = this.getEwok(serial);
