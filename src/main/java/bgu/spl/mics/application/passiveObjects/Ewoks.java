@@ -18,6 +18,7 @@ import java.util.Objects;
  * You can add ONLY private methods and fields to this class.
  */
 public class Ewoks {
+
     private Ewok[] ewoks;
 
     private final static class SingletonHolder {
@@ -25,7 +26,7 @@ public class Ewoks {
     }
   
     public static Ewoks getInstance() {
-        // SingletonHolder:
+        // SingletonHolder
         return SingletonHolder.instance;
     }
   
