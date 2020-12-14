@@ -14,14 +14,16 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 
 public class MessageBusImpl implements MessageBus {
-	private static MessageBusImpl instance = null; // Implemented as Singleton
+//	private static MessageBusImpl instance = null; // Implemented as Singleton
 
 	private Map<Class<? extends Event>, ConcurrentLinkedQueue<MicroService>> eventHash;
 	private Map<Class<? extends Broadcast>, ConcurrentLinkedQueue<MicroService>> broadcastHash;
 	private Map<MicroService, ConcurrentLinkedQueue<Message>> microServiceHash;
 	private Map<Event, Future> futureMap;
 
-
+	private final static class SingletonHolder {
+		private final static MessageBusImpl instance = new MessageBusImpl();
+	}
 
 	private MessageBusImpl() { // private constructor for singleton
 		eventHash = new ConcurrentHashMap<Class<? extends Event>, ConcurrentLinkedQueue<MicroService>>() {};
@@ -50,11 +52,14 @@ public class MessageBusImpl implements MessageBus {
 	}
 
 	// static synchronized method to get or create instance:
-	public static synchronized MessageBusImpl getInstance() {
-		if (Objects.isNull(instance))
+	public static /*synchronized*/ MessageBusImpl getInstance() {
+		/*if (Objects.isNull(instance))
 			instance = new MessageBusImpl();
 
-		return instance;
+		return instance;*/
+
+		// SingletonHolder:
+		return SingletonHolder.instance;
 	}
 
 	@Override
