@@ -1,5 +1,6 @@
 package bgu.spl.mics.application.passiveObjects;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -12,7 +13,6 @@ import java.util.NoSuchElementException;
  * You can add ONLY private methods and fields to this class.
  */
 public class Ewoks {
-
     private Ewok[] ewoks;
 
     private final static class SingletonHolder {
@@ -54,23 +54,28 @@ public class Ewoks {
      * are released.
      * @param serialNumbers - Ewoks' serial numbers.
      */
-    @SuppressWarnings("UnusedReturnValue")
     public synchronized boolean acquireEwoks(List<Integer> serialNumbers) {
         int acquired_ewoks = 0;
+        boolean[] acquired = new boolean[this.ewoks.length+1]; // For asserting uniqueness
+        for (int i = 0; i < acquired.length; i++) acquired[i] = false; // We don't trust the default initialization
+
         for (Integer serial : serialNumbers) {
             Ewok ewok = this.getEwok(serial);
-            // Block thread until Ewok is available, and all other threads waiting
-            // to use acquireEwoks() will wait as well:
-            while(!ewok.isAvailable()) {
-                try {
-                    this.wait();
+            if (!acquired[serial]) {
+                // Block thread until Ewok is available, and all other threads waiting
+                // to use acquireEwoks() will wait as well:
+                while (!ewok.isAvailable()) {
+                    try {
+                        this.wait();
+                    }
+                    catch (InterruptedException e) {}
                 }
-                catch (InterruptedException e) {}
-            }
 
-            if (ewok.isAvailable()) {
-                ewok.acquire();
-                acquired_ewoks++;
+                if (ewok.isAvailable()) {
+                    ewok.acquire();
+                    acquired[serial] = true;
+                    acquired_ewoks++;
+                }
             }
         }
 

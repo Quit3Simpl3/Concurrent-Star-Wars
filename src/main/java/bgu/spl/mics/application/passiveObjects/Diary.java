@@ -11,9 +11,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Diary {
     // Private fields:
     private AtomicInteger totalAttacks; // Sum of HanSolo and C3PO attacks.
+    // Task finishing timestamps:
     private long HanSoloFinish;
     private long C3POFinish;
     private long R2D2Deactivate;
+    // Thread termination timestamps:
     private long LeiaTerminate;
     private long HanSoloTerminate;
     private long C3POTerminate;

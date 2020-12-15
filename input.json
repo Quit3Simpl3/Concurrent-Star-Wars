@@ -1,9 +1,9 @@
 {
   "attacks": [{
-    "serials": [1, 2],
+    "serials": [1, 1],
     "duration": 100
   }, {
-    "serials": [2, 1],
+    "serials": [2, 2],
     "duration": 100
   }],
   "R2D2": 100,
