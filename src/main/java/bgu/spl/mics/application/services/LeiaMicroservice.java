@@ -44,7 +44,8 @@ public class LeiaMicroservice extends MicroService {
             Future<Boolean> future = futuresQueue.remove();
             result = null;
             if (future.isDone())
-                  result = future.get(10, TimeUnit.MILLISECONDS);
+                  result = future.get(5, TimeUnit.MILLISECONDS);
+
             if (Objects.isNull(result)) // If attack isn't finished, put the future back in the queue to be checked again.
                 futuresQueue.add(future);
         }
@@ -69,23 +70,20 @@ public class LeiaMicroservice extends MicroService {
     @Override
     protected void initialize() {
         Callback<TerminateBroadcast> terminated = c -> terminateLeia();
-        this.subscribeBroadcast(TerminateBroadcast.class,terminated);
+        this.subscribeBroadcast(TerminateBroadcast.class, terminated);
 
         // Send attack events and save their Future objects:
         for (int i = 0; i < attackFutures.length ;i++) {
             Future<Boolean> future = null;
-            while (Objects.isNull(future)) { // No one received the message
+            while (Objects.isNull(future)) // No one received the message
                 future = sendEvent(new AttackEvent(attacks[i])); // Send the message again until someone receives it
-            }
             this.attackFutures[i] = future;
         }
 
         // Await the attacks' results:
         if (awaitAttacks())
             if (sendDeactivationEvent())
-                if(sendBombDestroyerEvent()) {
+                if(sendBombDestroyerEvent())
                     sendBroadcast(new TerminateBroadcast("Leia"));
-                    // this.terminateLeia(); // TODO: Decide if we want this or just use the broadcast
-                }
     }
 }

@@ -11,7 +11,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * Only private fields and methods can be added to this class.
  */
 
-@SuppressWarnings({"Convert2Diamond", "FieldMayBeFinal", "BooleanMethodIsAlwaysInverted"})
 public class MessageBusImpl implements MessageBus {
 	private Map<Class<? extends Event>, ConcurrentLinkedQueue<MicroService>> eventHash;
 	private Map<Class<? extends Broadcast>, ConcurrentLinkedQueue<MicroService>> broadcastHash;
@@ -27,7 +26,6 @@ public class MessageBusImpl implements MessageBus {
 		broadcastHash = new ConcurrentHashMap<Class<? extends Broadcast>, ConcurrentLinkedQueue<MicroService>>() {};
 		microServiceHash = new ConcurrentHashMap<MicroService, ConcurrentLinkedQueue<Message>>() {};
 		futureMap = new ConcurrentHashMap<Event, Future>();
-
 	}
 
 	private boolean _is_hashMap_valid(Map hashMap, Object obj) {
@@ -54,38 +52,22 @@ public class MessageBusImpl implements MessageBus {
 		return SingletonHolder.instance;
 	}
 
-	private boolean event_hash_exists(Class<? extends Event> type) {
-		return (eventHash != null && eventHash.get(type) != null);
-	}
-
 	@Override
-	public <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m) {
-		if (!event_hash_exists(type)) { // Enter only if queue doesn't exist
-			synchronized (this) {
-				if (!event_hash_exists(type)) {
-					ConcurrentLinkedQueue<MicroService> eventQueue = new ConcurrentLinkedQueue<MicroService>();
-					eventHash.put(type, eventQueue);
-				}
-			}
+	public synchronized <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m) {
+		if (eventHash == null || eventHash.get(type) == null) {
+			ConcurrentLinkedQueue<MicroService> eventQueue = new ConcurrentLinkedQueue<MicroService>();
+			eventHash.put(type, eventQueue);
 		}
 
 		if(!eventHash.get(type).contains(m))
 			eventHash.get(type).add(m); // Add microservice to the queue of event 'type'
 	}
 
-	private boolean broadcast_hash_exists(Class<? extends Broadcast> type) {
-		return (broadcastHash != null && broadcastHash.get(type) != null);
-	}
-
 	@Override
-	public void subscribeBroadcast(Class<? extends Broadcast> type, MicroService m) {
-		if (!broadcast_hash_exists(type)) {
-			synchronized (this) {
-				if (!broadcast_hash_exists(type)) {
-					ConcurrentLinkedQueue<MicroService> broadcastQueue = new ConcurrentLinkedQueue<MicroService>();
-					broadcastHash.put(type, broadcastQueue);
-				}
-			}
+	public synchronized void subscribeBroadcast(Class<? extends Broadcast> type, MicroService m) {
+		if (broadcastHash == null || broadcastHash.get(type) == null) {
+			ConcurrentLinkedQueue<MicroService> broadcastQueue = new ConcurrentLinkedQueue<MicroService>();
+			broadcastHash.put(type, broadcastQueue);
 		}
 
 		if(!broadcastHash.get(type).contains(m))
@@ -161,7 +143,6 @@ public class MessageBusImpl implements MessageBus {
 		unsubscribe(broadcastHash,m);
 	}
 
-	@SuppressWarnings("RedundantThrows")
 	@Override
 	public synchronized Message awaitMessage (MicroService m) throws InterruptedException, IllegalStateException {
 		if (this.microServiceHash == null || !this.microServiceHash.containsKey(m)) {

@@ -21,51 +21,10 @@ public class Main {
 	}
 
 	private static void printOutput(int attacks, long timediff_finish, long timediff_terminate) {
-		/*
-		* There are 2 attacks.
-		* HanSolo and C3PO finish their tasks ~1000 milliseconds one after the other.
-		* All threads terminate ~4000 milliseconds later.
-		*/
 		System.out.println("There are " + attacks + " attacks.");
 		System.out.println("HanSolo and C3PO finished their tasks ~" + timediff_finish + " milliseconds one after the other.");
 		System.out.println("All threads terminated ~" + timediff_terminate + " milliseconds later.");
 	}
-
-	// TODO: DELETE BEFORE SUBMITTING!!!
-	private static void println(String str) {
-		System.out.println(str);
-	}
-
-	private static void generateTestResults(String path, long start_timestamp, long end_timestamp) {
-		println("\n**** TEST RESULTS ****");
-		Diary diary = Diary.getInstance();
-
-		println("HanSoloFinish: " + (diary.getHanSoloFinish()-start_timestamp));
-		println("C3POFinish: " + (diary.getC3POFinish()-start_timestamp));
-
-		long timediff_finish_attackers = Math.abs(diary.getC3POFinish() - diary.getHanSoloFinish());
-		println("First attacker finished after start: " + (Math.min(diary.getC3POFinish(), diary.getHanSoloFinish()) - start_timestamp));
-		println("Last attacker finished after start: " + (Math.max(diary.getC3POFinish(), diary.getHanSoloFinish()) - start_timestamp));
-		println("Time diff attack finish: " + timediff_finish_attackers);
-		if (timediff_finish_attackers <= 0) println("!!!!!!!!!!!!!!");
-
-		long first_termination = Math.min(diary.getHanSoloTerminate(), diary.getC3POTerminate());
-		first_termination = Math.min(first_termination, diary.getR2D2Terminate());
-		first_termination = Math.min(first_termination, diary.getLeiaTerminate());
-		first_termination = Math.min(first_termination, diary.getLandoTerminate());
-		println("First termination after start: " + (first_termination - start_timestamp));
-
-		long last_termination = Math.max(diary.getHanSoloTerminate(), diary.getC3POTerminate());
-		last_termination = Math.max(last_termination, diary.getR2D2Terminate());
-		last_termination = Math.max(last_termination, diary.getLeiaTerminate());
-		last_termination = Math.max(last_termination, diary.getLandoTerminate());
-		println("Last termination after start: " + (last_termination - start_timestamp));
-
-		println("Program end after start: " + (end_timestamp - start_timestamp));
-
-		println("**** END ****");
-	}
-	// TODO: DELETE BEFORE SUBMITTING!!!
 
 	private static Input parseJson(String path) throws IOException {
 		return JsonInputReader.getInputFromJson(path);
@@ -80,10 +39,7 @@ public class Main {
 	}
 
 	public static void main(String[] args) {
-		// TODO: DELETE BEFORE SUBMITTING!!!
-		long start_timestamp = System.currentTimeMillis();
-		// TODO: DELETE BEFORE SUBMITTING!!!
-
+		// Make sure args received:
 		if (args == null) return;
 		String inputPath = args[0];
 		String outputPath = args[1];
@@ -129,13 +85,9 @@ public class Main {
 					last_termination = Math.max(last_termination, diary.getR2D2Terminate());
 					last_termination = Math.max(last_termination, diary.getLeiaTerminate());
 					last_termination = Math.max(last_termination, diary.getLandoTerminate());
-					long timediff_terminate = Math.abs(last_finish - last_termination);
+					long timediff_terminate = Math.abs(last_termination - last_finish);
 
 					printOutput(attacks, timediff_finish, timediff_terminate);
-
-					// TODO: DELETE BEFORE SUBMITTING!!!
-					generateTestResults("test_results.json", start_timestamp, end_timestamp);
-					// TODO: DELETE BEFORE SUBMITTING!!!
 				}
 				catch (IOException e) {
 					System.out.println("Json writing error.");

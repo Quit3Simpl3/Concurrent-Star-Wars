@@ -79,7 +79,7 @@ public class Future<T> {
      * 	       wait for {@code timeout} TimeUnits {@code unit}. If time has
      *         elapsed, return null.
      */
-	public T get(long timeout, TimeUnit unit) {
+	public synchronized T get(long timeout, TimeUnit unit) {
 		long timeout_millis = TimeUnit.MILLISECONDS.convert(timeout, unit);
 		long start = System.currentTimeMillis();
 
@@ -87,7 +87,8 @@ public class Future<T> {
 			if (this.isDone()) return this._get_result();
 			try {
 				this.wait(1); // Thread waits for 1 millis and then checks again
-			} catch (InterruptedException e) {}
+			}
+			catch (InterruptedException e) {}
 		} while(!((System.currentTimeMillis() - start) > timeout_millis));
 
 		return null;
