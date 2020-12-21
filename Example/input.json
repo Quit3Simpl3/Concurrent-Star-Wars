@@ -1,12 +1,12 @@
 {
   "attacks": [{
-    "serials": [1, 1],
-    "duration": 100
+    "serials": [1, 2],
+    "duration": 500
   }, {
-    "serials": [2, 2],
-    "duration": 100
+    "serials": [2, 1],
+    "duration": 1000
   }],
-  "R2D2": 100,
-  "Lando": 100,
+  "R2D2": 1500,
+  "Lando": 500,
   "Ewoks": 2
 }
