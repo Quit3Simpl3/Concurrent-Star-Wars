@@ -25,8 +25,8 @@ public class C3POMicroservice extends MicroService {
 	
     public C3POMicroservice(CountDownLatch init) {
         super("C3PO");
-        diary =Diary.getInstance();
-        ewoks =Ewoks.getInstance();
+        diary = Diary.getInstance();
+        ewoks = Ewoks.getInstance();
         this.init = init;
     }
 
