@@ -4,9 +4,9 @@ import concurrent_star_wars.mics.application.passiveObjects.Diary;
 import concurrent_star_wars.mics.application.passiveObjects.Ewoks;
 import concurrent_star_wars.mics.application.passiveObjects.Input;
 import concurrent_star_wars.mics.application.passiveObjects.JsonInputReader;
-import concurrent_star_wars.mics.application.services.*;
 import concurrent_star_wars.mics.application.passiveObjects.*;
 import concurrent_star_wars.mics.application.services.*;
+
 import com.google.gson.Gson;
 
 import java.io.FileWriter;
@@ -15,8 +15,6 @@ import java.io.Writer;
 import java.util.concurrent.CountDownLatch;
 
 /** This is the Main class of the application.
- * Here you parse the input file, create the different components of the application, and run the system.
- * In the end, you output a JSON.
  */
 
 public class Main {
