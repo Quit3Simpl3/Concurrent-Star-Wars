@@ -1,6 +1,5 @@
 package concurrent_star_wars.mics.application.services;
 
-
 import concurrent_star_wars.mics.application.passiveObjects.Attack;
 import concurrent_star_wars.mics.application.passiveObjects.Diary;
 import concurrent_star_wars.mics.application.passiveObjects.Ewoks;
@@ -49,9 +48,9 @@ public class HanSoloMicroservice extends MicroService {
 
         Callback<TerminateBroadcast> terminated = c -> {
             terminate();
-            diary.updateHanSolo(0,0,System.currentTimeMillis());
+            diary.updateHanSolo(0, 0, System.currentTimeMillis());
         };
-        this.subscribeBroadcast(TerminateBroadcast.class,terminated);
+        this.subscribeBroadcast(TerminateBroadcast.class, terminated);
 
         init.countDown();
     }
