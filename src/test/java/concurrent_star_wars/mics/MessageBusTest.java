@@ -133,14 +133,6 @@ class MessageBusTest {
         // Subscribe Han and C3PO to broadTest in the message bus:
         mb.subscribeBroadcast(broadTest.getClass(), han);
         mb.subscribeBroadcast(broadTest.getClass(), c3po);
-        // Test awaitMessage without a message waiting:
-        /*try {
-            testMsg1 = mb.awaitMessage(han);
-            testMsg2 = mb.awaitMessage(c3po);
-        } catch (InterruptedException e) {
-            assertNull(testMsg1);
-            assertNull(testMsg2);
-        }*/
         // Test awaitMessage with a message waiting:
         mb.sendBroadcast(broadTest);
         try {
@@ -172,32 +164,6 @@ class MessageBusTest {
         // Subscribe Han and C3PO to AttackEvent type in the message bus:
         mb.subscribeEvent(ExampleEvent.class, han);
         mb.subscribeEvent(ExampleEvent.class, c3po);
-        // Test awaitMessage without a message waiting:
-        /*try {
-            testMsg1 = mb.awaitMessage(han);
-        }
-        catch (InterruptedException e) {
-            assertNull(testMsg1);
-        }*/
-        // Test awaitMessage with ONE message waiting:
-        /*mb.sendEvent(exampleEvent1);
-        try {
-            testMsg1 = mb.awaitMessage(han);
-            testMsg2 = mb.awaitMessage(c3po);
-        }
-        catch (InterruptedException e) {
-            // Make sure ONLY ONE received a message:
-            String msg_han = ((ExampleEvent)testMsg1).getSenderName();
-            String msg_c3po = ((ExampleEvent)testMsg2).getSenderName();
-            String example_event1 = ((ExampleEvent)exampleEvent1).getSenderName();
-            // Condition:
-            boolean cond = (
-                (testMsg2 == null && ((ExampleEvent)testMsg1).getSenderName().equals(example_event1))
-                ||
-                (testMsg1 == null && ((ExampleEvent)testMsg2).getSenderName().equals(example_event1))
-            );
-            assertTrue(cond);
-        }*/
         // Test awaitMessage with TWO messages waiting:
         mb.sendEvent(exampleEvent2);
         mb.sendEvent(exampleEvent3);
