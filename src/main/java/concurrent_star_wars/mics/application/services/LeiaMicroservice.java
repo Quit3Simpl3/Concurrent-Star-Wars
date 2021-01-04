@@ -23,14 +23,14 @@ public class LeiaMicroservice extends MicroService {
 	private Future[] attackFutures;
 
     public LeiaMicroservice(Attack[] attacks) {
-        super("Leia");
-		this.attacks = attacks;
-		attackFutures = new Future[attacks.length];
-		diary = Diary.getInstance();
+	super("Leia");
+	this.attacks = attacks;
+	attackFutures = new Future[attacks.length];
+	diary = Diary.getInstance();
     }
 
     private boolean awaitAttacks() {
-        Boolean result = null;
+	Boolean result = null;
         Queue<Future<Boolean>> futuresQueue = new LinkedList<>();
         // Enqueue attack future objects:
         for (Future<Boolean> future : this.attackFutures) {
